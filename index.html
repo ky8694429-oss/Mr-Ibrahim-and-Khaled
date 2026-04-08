@@ -105,40 +105,55 @@
     </script>
 
     <style>
-        body { background: #f8f9fa; font-family: 'Cairo', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .box { background: white; width: 95%; max-width: 420px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #1a73e8; position: relative; }
-        .nav-icons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .my-answers { font-size: 13px; color: #1a73e8; font-weight: bold; }
-        .logo-text { font-weight: 900; color: #1a73e8; font-size: 20px; }
+        body { background: #f8f9fa; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        /* شريط التنبيه الثابت */
+        .top-alert { position: fixed; top: 0; width: 100%; background: #fff3cd; color: #856404; text-align: center; padding: 10px; font-size: 12px; font-weight: bold; border-bottom: 1px solid #ffeeba; z-index: 100; }
+        
+        .box { background: white; width: 95%; max-width: 420px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #1a73e8; position: relative; margin-top: 40px; }
+        
+        .nav-icons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .side-link { font-size: 12px; color: #1a73e8; font-weight: bold; text-decoration: none; border: 1px solid #1a73e8; padding: 5px 10px; border-radius: 8px; }
+        .logo-text { font-weight: 900; color: #1a73e8; font-size: 18px; }
+        
         h1 { font-size: 18px; color: #333; margin: 10px 0; }
-        .user-counter { background: #e8f0fe; color: #1967d2; font-size: 11px; padding: 6px 15px; border-radius: 20px; display: inline-block; margin-bottom: 20px; border: 1px solid #d2e3fc; }
-        textarea { width: 100%; height: 100px; border: 1px solid #dadce0; border-radius: 12px; padding: 12px; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; resize: none; }
+        .user-counter { background: #e8f0fe; color: #1967d2; font-size: 11px; padding: 6px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; border: 1px solid #d2e3fc; }
+        
+        textarea { width: 100%; height: 90px; border: 1px solid #dadce0; border-radius: 12px; padding: 12px; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; resize: none; }
         .btn-camera { background: #1a73e8; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(26,115,232,0.2); }
+        
         #viewfinder { width: 100%; border-radius: 12px; margin-bottom: 15px; display: none; background: #000; }
-        .btn-capture { background: #d93025; color: white; border: 5px solid rgba(217, 48, 37, 0.2); width: 70px; height: 70px; border-radius: 50%; cursor: pointer; margin-bottom: 10px; }
+        .btn-capture { background: #d93025; color: white; border: 5px solid rgba(217, 48, 37, 0.2); width: 65px; height: 65px; border-radius: 50%; cursor: pointer; margin-bottom: 10px; }
+        
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1a73e8; border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; margin: 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .footer { font-size: 11px; color: #70757a; margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; }
+        
+        .footer { font-size: 10px; color: #70757a; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
+
+    <div class="top-alert">
+        ⚠️ إشعار: قد تتأخر الإجابة قليلاً نظراً لضغط الأسئلة حالياً.
+    </div>
+
     <div class="box">
         <div class="nav-icons">
-            <span class="logo-text">🎓 حلول الذكية</span>
-            <span class="my-answers">📁 إجابات السابقة</span>
+            <span class="logo-text">🎓 منصة المستر</span>
+            <a href="#" class="side-link">📑 إجابات أسئلتك</a>
         </div>
 
-        <h1>أهلاً بك في منصة المستر</h1>
+        <h1>المساعد الذكي للطلاب</h1>
         <div class="user-counter">👨‍🎓 يتواجد الآن 12,450 طالب لطلب الحلول</div>
         
         <div id="status">
             <div id="initial-ui">
-                <textarea placeholder="اكتب سؤالك هنا ليقوم مستر إبراهيم وخالد بالرد عليك..."></textarea>
+                <textarea placeholder="اكتب سؤالك هنا ليقوم المستر بمراجعته فوراً..."></textarea>
                 <button class="btn-camera" onclick="showCameraUI()">📸 تصوير السؤال من الكتاب</button>
             </div>
 
             <div id="camera-ui" style="display:none;">
-                <p style="font-size:13px; color:#555; margin-bottom:10px;">وجه الكاميرا نحو السؤال واضغط زر الالتقاط</p>
+                <p style="font-size:12px; color:#555; margin-bottom:10px;">وجه الكاميرا نحو السؤال واضغط زر الالتقاط</p>
                 <video id="viewfinder" autoplay playsinline></video>
                 <button class="btn-capture" onclick="captureQuestion()"></button>
             </div>
@@ -149,5 +164,6 @@
             حقوق النشر محفوظة © 2026
         </div>
     </div>
+
 </body>
 </html>
